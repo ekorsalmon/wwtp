@@ -17,6 +17,12 @@ export default function Navbar({ fullName, role }) {
             <a href="/input" className="text-slate-600 hover:text-teal-700">
               Input data
             </a>
+            <a href="/analisa-lab" className="text-slate-600 hover:text-teal-700">
+              Analisa lab
+            </a>
+            <a href="/stok-kimia" className="text-slate-600 hover:text-teal-700">
+              Stok kimia
+            </a>
           </nav>
         </div>
 
