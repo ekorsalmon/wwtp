@@ -22,7 +22,11 @@ export default async function DashboardPage() {
     .limit(15)
 
   const { data: standar } = await supabase.from('baku_mutu').select('*')
-  const { data: stock } = await supabase.from('chemical_stock_current').select('*').order('label')
+  const { data: stock } = await supabase
+    .from('chemical_stock_current')
+    .select('*')
+    .in('key', ['pac', 'naoh', 'polymer', 'kaporit', 'dca'])
+    .order('label')
 
   const latest = entries?.[0]
   const chronological = [...(entries || [])].reverse()
@@ -78,9 +82,9 @@ export default async function DashboardPage() {
               <StockCard
                 key={s.key}
                 label={s.label}
-                unit={s.unit}
+                satuan={s.satuan}
                 stok={s.stok}
-                stokMinimum={s.stok_minimum}
+                estimasiMinggu={s.estimasi_minggu}
                 accent={accentAt(i)}
               />
             ))}

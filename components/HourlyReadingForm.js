@@ -25,7 +25,8 @@ export default function HourlyReadingForm({ meters }) {
   const supabase = createClient()
 
   const selectedMeter = meters.find((m) => m.key === form.meter_key)
-  const isFlowmeter = selectedMeter?.jenis === 'flowmeter'
+  const isFlowmeter = selectedMeter?.jenis === 'flowmeter' || selectedMeter?.jenis === 'flowmeter_harian'
+  const isDaily = selectedMeter?.jenis === 'flowmeter_harian'
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -46,7 +47,7 @@ export default function HourlyReadingForm({ meters }) {
       {
         meter_key: form.meter_key,
         tanggal: form.tanggal,
-        jam: Number(form.jam),
+        jam: isDaily ? 0 : Number(form.jam),
         nilai: Number(form.nilai),
         input_by: user.id,
       },
@@ -85,7 +86,7 @@ export default function HourlyReadingForm({ meters }) {
         </select>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className={isDaily ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-3 gap-3'}>
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="tanggal">
             Tanggal
@@ -98,18 +99,20 @@ export default function HourlyReadingForm({ meters }) {
             className={inputClass}
           />
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="jam">
-            Jam
-          </label>
-          <select id="jam" value={form.jam} onChange={(e) => update('jam', e.target.value)} className={inputClass}>
-            {Array.from({ length: 24 }, (_, h) => (
-              <option key={h} value={h}>
-                {String(h).padStart(2, '0')}:00
-              </option>
-            ))}
-          </select>
-        </div>
+        {!isDaily && (
+          <div>
+            <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="jam">
+              Jam
+            </label>
+            <select id="jam" value={form.jam} onChange={(e) => update('jam', e.target.value)} className={inputClass}>
+              {Array.from({ length: 24 }, (_, h) => (
+                <option key={h} value={h}>
+                  {String(h).padStart(2, '0')}:00
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="nilai">
             {isFlowmeter ? 'Angka meteran' : 'Nilai SV30'}

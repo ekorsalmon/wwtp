@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
+const UNIT_OPTIONS = ['WWTP1', 'WWTP2', 'RWTP', 'STP1', 'STP2', 'Lainnya']
+
 const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
 
@@ -14,6 +16,7 @@ export default function ChemicalMovementForm({ chemicals }) {
     tanggal: today,
     jenis: 'keluar',
     jumlah: '',
+    unit: 'WWTP1',
     keterangan: '',
   })
   const [status, setStatus] = useState(null)
@@ -41,6 +44,7 @@ export default function ChemicalMovementForm({ chemicals }) {
       tanggal: form.tanggal,
       jenis: form.jenis,
       jumlah: Number(form.jumlah),
+      unit: form.jenis === 'keluar' ? form.unit : null,
       keterangan: form.keterangan || null,
       input_by: user.id,
     })
@@ -101,19 +105,35 @@ export default function ChemicalMovementForm({ chemicals }) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="jumlah">
-          Jumlah (kg)
-        </label>
-        <input
-          id="jumlah"
-          type="number"
-          step="0.01"
-          required
-          value={form.jumlah}
-          onChange={(e) => update('jumlah', e.target.value)}
-          className={inputClass}
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="jumlah">
+            Jumlah
+          </label>
+          <input
+            id="jumlah"
+            type="number"
+            step="0.01"
+            required
+            value={form.jumlah}
+            onChange={(e) => update('jumlah', e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        {form.jenis === 'keluar' && (
+          <div>
+            <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="unit">
+              Dipakai di unit
+            </label>
+            <select id="unit" value={form.unit} onChange={(e) => update('unit', e.target.value)} className={inputClass}>
+              {UNIT_OPTIONS.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div>
@@ -126,7 +146,7 @@ export default function ChemicalMovementForm({ chemicals }) {
           value={form.keterangan}
           onChange={(e) => update('keterangan', e.target.value)}
           className={inputClass}
-          placeholder="Dipakai WWTP1, nomor dokumen, dll"
+          placeholder="Nomor dokumen, catatan lain, dll"
         />
       </div>
 

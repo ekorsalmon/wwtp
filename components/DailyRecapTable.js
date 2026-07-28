@@ -12,12 +12,14 @@ export default function DailyRecapTable({ meters }) {
   const today = new Date().toISOString().slice(0, 10)
   const [tanggal, setTanggal] = useState(today)
   const [meterKey, setMeterKey] = useState(meters[0]?.key || '')
-  const [rows, setRows] = useState({})
+  const [hourRows, setHourRows] = useState({})
+  const [dailyRows, setDailyRows] = useState([])
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
 
   const meter = meters.find((m) => m.key === meterKey)
-  const isFlowmeter = meter?.jenis === 'flowmeter'
+  const isDaily = meter?.jenis === 'flowmeter_harian'
+  const isFlowmeter = meter?.jenis === 'flowmeter' || isDaily
 
   useEffect(() => {
     if (!meterKey) return
@@ -25,30 +27,43 @@ export default function DailyRecapTable({ meters }) {
     let active = true
     setLoading(true)
 
-    supabase
-      .from('hourly_readings_detail')
-      .select('jam, nilai, debit')
-      .eq('tanggal', tanggal)
-      .eq('meter_key', meterKey)
-      .then(({ data }) => {
-        if (!active) return
-        const map = {}
-        ;(data || []).forEach((r) => {
-          map[r.jam] = r
+    if (isDaily) {
+      // Titik harian: tampilkan daftar 14 hari terakhir, bukan grid per jam
+      supabase
+        .from('hourly_readings_detail')
+        .select('tanggal, nilai, debit')
+        .eq('meter_key', meterKey)
+        .order('tanggal', { ascending: false })
+        .limit(14)
+        .then(({ data }) => {
+          if (!active) return
+          setDailyRows(data || [])
+          setLoading(false)
         })
-        setRows(map)
-        setLoading(false)
-      })
+    } else {
+      supabase
+        .from('hourly_readings_detail')
+        .select('jam, nilai, debit')
+        .eq('tanggal', tanggal)
+        .eq('meter_key', meterKey)
+        .then(({ data }) => {
+          if (!active) return
+          const map = {}
+          ;(data || []).forEach((r) => {
+            map[r.jam] = r
+          })
+          setHourRows(map)
+          setLoading(false)
+        })
+    }
 
     return () => {
       active = false
     }
-  }, [tanggal, meterKey])
+  }, [tanggal, meterKey, isDaily])
 
-  const filledValues = HOURS.map((h) => rows[h]).filter(Boolean)
-  const total = isFlowmeter
-    ? filledValues.reduce((sum, r) => sum + (r.debit ?? 0), 0)
-    : null
+  const filledValues = HOURS.map((h) => hourRows[h]).filter(Boolean)
+  const total = isFlowmeter && !isDaily ? filledValues.reduce((sum, r) => sum + (r.debit ?? 0), 0) : null
   const average =
     !isFlowmeter && filledValues.length > 0
       ? (filledValues.reduce((sum, r) => sum + Number(r.nilai || 0), 0) / filledValues.length).toFixed(2)
@@ -57,18 +72,20 @@ export default function DailyRecapTable({ meters }) {
   return (
     <div className="bg-white rounded-3xl p-5">
       <div className="flex flex-wrap items-end gap-3 mb-4">
-        <div>
-          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="recap-tanggal">
-            Tanggal
-          </label>
-          <input
-            id="recap-tanggal"
-            type="date"
-            value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
-            className={inputClass}
-          />
-        </div>
+        {!isDaily && (
+          <div>
+            <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="recap-tanggal">
+              Tanggal
+            </label>
+            <input
+              id="recap-tanggal"
+              type="date"
+              value={tanggal}
+              onChange={(e) => setTanggal(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        )}
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="recap-meter">
             Titik pembacaan
@@ -90,6 +107,20 @@ export default function DailyRecapTable({ meters }) {
 
       {loading ? (
         <p className="text-sm text-ink/40">Memuat...</p>
+      ) : isDaily ? (
+        <div className="divide-y divide-ink/5">
+          {dailyRows.length === 0 && <p className="text-sm text-ink/40">Belum ada pembacaan.</p>}
+          {dailyRows.map((r) => (
+            <div key={r.tanggal} className="flex items-center justify-between py-2 text-sm">
+              <span className="text-ink/70">
+                {new Date(r.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+              <span className="font-semibold text-ink">
+                {r.debit !== null ? r.debit : '—'} <span className="text-ink/40 font-normal">{meter?.unit}</span>
+              </span>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="text-sm min-w-max">
@@ -105,7 +136,7 @@ export default function DailyRecapTable({ meters }) {
             <tbody>
               <tr>
                 {HOURS.map((h) => {
-                  const r = rows[h]
+                  const r = hourRows[h]
                   const shown = r ? (isFlowmeter ? r.debit : r.nilai) : null
                   return (
                     <td key={h} className="text-center px-2 py-2 border-t border-ink/5">
@@ -125,11 +156,15 @@ export default function DailyRecapTable({ meters }) {
 
       <div className="flex items-center justify-between mt-3">
         {meter && <p className="text-xs text-ink/40">Satuan: {meter.unit}</p>}
-        {isFlowmeter && total !== null && (
-          <p className="text-sm font-semibold text-ink">Total hari ini: {total.toFixed(2)} {meter.unit}</p>
+        {total !== null && (
+          <p className="text-sm font-semibold text-ink">
+            Total hari ini: {total.toFixed(2)} {meter.unit}
+          </p>
         )}
-        {!isFlowmeter && average !== null && (
-          <p className="text-sm font-semibold text-ink">Rata-rata: {average} {meter.unit}</p>
+        {average !== null && (
+          <p className="text-sm font-semibold text-ink">
+            Rata-rata: {average} {meter.unit}
+          </p>
         )}
       </div>
     </div>

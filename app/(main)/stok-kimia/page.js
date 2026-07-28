@@ -13,7 +13,7 @@ export default async function StokKimiaPage() {
 
   const { data: movements } = await supabase
     .from('chemical_movements')
-    .select('*, chemicals(label, unit)')
+    .select('*, chemicals(label, satuan)')
     .order('tanggal', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(20)
@@ -23,7 +23,7 @@ export default async function StokKimiaPage() {
       <div>
         <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">Stok bahan kimia</h1>
         <p className="text-sm text-ink/50 mt-1">
-          Sisa stok dihitung otomatis dari transaksi masuk dan keluar di bawah.
+          Sisa stok dan estimasi habis dihitung otomatis dari transaksi masuk/keluar di bawah.
         </p>
       </div>
 
@@ -35,9 +35,9 @@ export default async function StokKimiaPage() {
           <StockCard
             key={s.key}
             label={s.label}
-            unit={s.unit}
+            satuan={s.satuan}
             stok={s.stok}
-            stokMinimum={s.stok_minimum}
+            estimasiMinggu={s.estimasi_minggu}
             accent={accentAt(i)}
           />
         ))}
@@ -58,7 +58,10 @@ export default async function StokKimiaPage() {
             {(movements || []).map((m) => (
               <div key={m.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <div>
-                  <p className="text-ink/80 font-medium">{m.chemicals?.label}</p>
+                  <p className="text-ink/80 font-medium">
+                    {m.chemicals?.label}
+                    {m.unit ? <span className="text-ink/40 font-normal"> · {m.unit}</span> : null}
+                  </p>
                   <p className="text-xs text-ink/40">
                     {new Date(m.tanggal).toLocaleDateString('id-ID', {
                       day: 'numeric',
@@ -70,7 +73,7 @@ export default async function StokKimiaPage() {
                 </div>
                 <span className={`font-semibold ${m.jenis === 'masuk' ? 'text-emerald-600' : 'text-ink/60'}`}>
                   {m.jenis === 'masuk' ? '+' : '-'}
-                  {m.jumlah} {m.chemicals?.unit}
+                  {m.jumlah} {m.chemicals?.satuan}
                 </span>
               </div>
             ))}
