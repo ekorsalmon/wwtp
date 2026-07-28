@@ -7,6 +7,7 @@ const ROLE_LABEL = {
 const PRIMARY_LINKS = [
   { href: '/dashboard', label: 'HOME' },
   { href: '/input', label: 'DATA' },
+  { href: '/profile', label: 'Profile' },
 ]
 
 const SECONDARY_LINKS = [
@@ -36,7 +37,7 @@ export default function Navbar({ fullName, role }) {
             </span>
             <nav className="flex items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10">
               {PRIMARY_LINKS.map((link) => (
-                <a
+                
                   key={link.href}
                   href={link.href}
                   className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
@@ -65,7 +66,7 @@ export default function Navbar({ fullName, role }) {
 
         <nav className="flex flex-wrap gap-1.5">
           {SECONDARY_LINKS.map((link) => (
-            <a
+            
               key={link.href}
               href={link.href}
               className="text-xs font-semibold text-ink/60 bg-white border-2 border-ink/10 px-3 py-1.5 rounded-lg hover:bg-brand hover:text-white hover:border-brand transition-colors"
