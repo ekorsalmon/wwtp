@@ -9,17 +9,18 @@ const LINKS = [
   { href: '/input', label: 'Input data' },
   { href: '/analisa-lab', label: 'Analisa lab' },
   { href: '/stok-kimia', label: 'Stok kimia' },
+  { href: '/pembacaan-jam', label: 'Pembacaan jam' },
 ]
 
 export default function Navbar({ fullName, role }) {
   return (
     <header className="bg-cream">
-      <div className="max-w-5xl mx-auto px-4 h-20 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-6">
+      <div className="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="font-display font-extrabold text-lg tracking-tight text-ink">
             WWTP <span className="text-brand">P1</span>
           </span>
-          <nav className="flex items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10">
+          <nav className="flex flex-wrap items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10">
             {LINKS.map((link) => (
               <a
                 key={link.href}
