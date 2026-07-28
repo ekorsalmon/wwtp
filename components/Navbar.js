@@ -4,35 +4,44 @@ const ROLE_LABEL = {
   atasan: 'Atasan',
 }
 
+const LINKS = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/input', label: 'Input data' },
+  { href: '/analisa-lab', label: 'Analisa lab' },
+  { href: '/stok-kimia', label: 'Stok kimia' },
+]
+
 export default function Navbar({ fullName, role }) {
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <span className="font-semibold text-teal-700">WWTP P1</span>
-          <nav className="flex gap-5 text-sm">
-            <a href="/dashboard" className="text-slate-600 hover:text-teal-700">
-              Dashboard
-            </a>
-            <a href="/input" className="text-slate-600 hover:text-teal-700">
-              Input data
-            </a>
-            <a href="/analisa-lab" className="text-slate-600 hover:text-teal-700">
-              Analisa lab
-            </a>
-            <a href="/stok-kimia" className="text-slate-600 hover:text-teal-700">
-              Stok kimia
-            </a>
+    <header className="bg-cream">
+      <div className="max-w-5xl mx-auto px-4 h-20 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-6">
+          <span className="font-display font-extrabold text-lg tracking-tight text-ink">
+            WWTP <span className="text-brand">P1</span>
+          </span>
+          <nav className="flex items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10">
+            {LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-sm font-semibold text-ink/60 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-right leading-tight">
-            <p className="font-medium text-slate-800">{fullName}</p>
-            <p className="text-xs text-slate-500">{ROLE_LABEL[role] || role}</p>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:block text-right leading-tight">
+            <p className="text-sm font-semibold text-ink">{fullName}</p>
+            <p className="text-xs text-ink/50">{ROLE_LABEL[role] || role}</p>
           </div>
           <form action="/auth/signout" method="post">
-            <button type="submit" className="text-sm text-slate-500 hover:text-red-600">
+            <button
+              type="submit"
+              className="text-sm font-semibold text-ink/60 hover:text-coral bg-white border-2 border-ink/10 rounded-full px-4 py-1.5 transition-colors"
+            >
               Keluar
             </button>
           </form>

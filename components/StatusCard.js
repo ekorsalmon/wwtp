@@ -1,21 +1,28 @@
-const STYLES = {
-  ok: { bg: 'bg-emerald-50', text: 'text-emerald-700', label: 'Sesuai baku mutu' },
-  violation: { bg: 'bg-red-50', text: 'text-red-700', label: 'Di luar baku mutu' },
-  unknown: { bg: 'bg-slate-100', text: 'text-slate-500', label: 'Belum ada data' },
+const ACCENT_BG = {
+  sunshine: 'bg-sunshine/40',
+  mint: 'bg-mint/40',
+  lavender: 'bg-lavender/40',
+  sky: 'bg-sky/40',
 }
 
-export default function StatusCard({ label, value, unit, status }) {
-  const style = STYLES[status] || STYLES.unknown
+const STATUS_STYLES = {
+  ok: { pill: 'bg-mint text-ink', label: 'Sesuai baku mutu' },
+  violation: { pill: 'bg-coral text-white', label: 'Di luar baku mutu' },
+  unknown: { pill: 'bg-white text-ink/50', label: 'Belum ada data' },
+}
+
+export default function StatusCard({ label, value, unit, status, accent = 'sunshine' }) {
+  const style = STATUS_STYLES[status] || STATUS_STYLES.unknown
   const hasValue = value !== null && value !== undefined
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4">
-      <p className="text-sm text-slate-500 mb-1">{label}</p>
-      <p className="text-2xl font-semibold text-slate-900 mb-2">
+    <div className={`rounded-3xl p-5 ${ACCENT_BG[accent] || ACCENT_BG.sunshine}`}>
+      <p className="text-sm font-medium text-ink/60 mb-2">{label}</p>
+      <p className="font-display text-3xl font-extrabold text-ink mb-3">
         {hasValue ? value : '—'}
-        {unit && hasValue ? <span className="text-sm font-normal text-slate-400 ml-1">{unit}</span> : null}
+        {unit && hasValue ? <span className="text-sm font-medium text-ink/40 ml-1">{unit}</span> : null}
       </p>
-      <span className={`inline-block text-xs px-2 py-1 rounded-md ${style.bg} ${style.text}`}>
+      <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${style.pill}`}>
         {style.label}
       </span>
     </div>

@@ -16,6 +16,9 @@ const FIELDS = [
   { key: 'bod', label: 'BOD (mg/L)' },
 ]
 
+const inputClass =
+  'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
+
 export default function DataForm() {
   const today = new Date().toISOString().slice(0, 10)
   const [form, setForm] = useState({ tanggal: today, area: 'WWTP 1', catatan: '' })
@@ -67,10 +70,10 @@ export default function DataForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-5 space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-slate-600 mb-1" htmlFor="tanggal">
+          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="tanggal">
             Tanggal
           </label>
           <input
@@ -79,54 +82,49 @@ export default function DataForm() {
             required
             value={form.tanggal}
             onChange={(e) => update('tanggal', e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-sm text-slate-600 mb-1" htmlFor="area">
+          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="area">
             Area
           </label>
-          <select
-            id="area"
-            value={form.area}
-            onChange={(e) => update('area', e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
-          >
+          <select id="area" value={form.area} onChange={(e) => update('area', e.target.value)} className={inputClass}>
             <option>WWTP 1</option>
             <option>WWTP 2</option>
           </select>
         </div>
       </div>
 
-      <div className="border border-slate-200 rounded-xl overflow-hidden">
-        <div className="grid grid-cols-3 bg-slate-50 text-xs font-medium text-slate-500 px-4 py-2">
+      <div className="border-2 border-ink/10 rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-3 bg-cream text-xs font-semibold text-ink/50 px-4 py-2">
           <span>Parameter</span>
           <span>Inlet</span>
           <span>Outlet</span>
         </div>
         {FIELDS.map((f) => (
-          <div key={f.key} className="grid grid-cols-3 px-4 py-2 border-t border-slate-100 items-center">
-            <span className="text-sm text-slate-700">{f.label}</span>
+          <div key={f.key} className="grid grid-cols-3 px-4 py-2 border-t border-ink/5 items-center">
+            <span className="text-sm text-ink/80">{f.label}</span>
             <input
               type="number"
               step="0.01"
               value={form[`${f.key}_inlet`] || ''}
               onChange={(e) => update(`${f.key}_inlet`, e.target.value)}
-              className="border border-slate-300 rounded-lg px-2 py-1.5 text-sm w-28"
+              className="border-2 border-ink/10 rounded-lg px-2 py-1.5 text-sm w-28 focus:outline-none focus:border-brand"
             />
             <input
               type="number"
               step="0.01"
               value={form[`${f.key}_outlet`] || ''}
               onChange={(e) => update(`${f.key}_outlet`, e.target.value)}
-              className="border border-slate-300 rounded-lg px-2 py-1.5 text-sm w-28"
+              className="border-2 border-ink/10 rounded-lg px-2 py-1.5 text-sm w-28 focus:outline-none focus:border-brand"
             />
           </div>
         ))}
       </div>
 
       <div>
-        <label className="block text-sm text-slate-600 mb-1" htmlFor="catatan">
+        <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="catatan">
           Catatan (opsional)
         </label>
         <textarea
@@ -134,13 +132,13 @@ export default function DataForm() {
           rows={3}
           value={form.catatan}
           onChange={(e) => update('catatan', e.target.value)}
-          className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+          className={inputClass}
           placeholder="Kendala, kejadian khusus, dll"
         />
       </div>
 
       {status && (
-        <p className={`text-sm ${status.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
+        <p className={`text-sm font-medium ${status.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
           {status.message}
         </p>
       )}
@@ -148,7 +146,7 @@ export default function DataForm() {
       <button
         type="submit"
         disabled={saving}
-        className="bg-teal-700 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-teal-800 disabled:opacity-50"
+        className="bg-brand text-white text-sm font-semibold px-6 py-2.5 rounded-full hover:bg-brand-dark transition-colors disabled:opacity-50"
       >
         {saving ? 'Menyimpan...' : 'Simpan data'}
       </button>

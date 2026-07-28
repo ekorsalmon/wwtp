@@ -1,18 +1,25 @@
-export default function StockCard({ label, unit, stok, stokMinimum }) {
+const ACCENT_BG = {
+  sunshine: 'bg-sunshine/40',
+  mint: 'bg-mint/40',
+  lavender: 'bg-lavender/40',
+  sky: 'bg-sky/40',
+}
+
+export default function StockCard({ label, unit, stok, stokMinimum, accent = 'sunshine' }) {
   const isLow = stokMinimum !== null && stokMinimum !== undefined && stok <= stokMinimum
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4">
-      <p className="text-sm text-slate-500 mb-1">{label}</p>
-      <p className="text-2xl font-semibold text-slate-900 mb-2">
-        {stok} <span className="text-sm font-normal text-slate-400">{unit}</span>
+    <div className={`rounded-3xl p-5 ${ACCENT_BG[accent] || ACCENT_BG.sunshine}`}>
+      <p className="text-sm font-medium text-ink/60 mb-2">{label}</p>
+      <p className="font-display text-2xl font-extrabold text-ink mb-3">
+        {stok} <span className="text-sm font-medium text-ink/40">{unit}</span>
       </p>
       {isLow ? (
-        <span className="inline-block text-xs px-2 py-1 rounded-md bg-amber-50 text-amber-700">
+        <span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-coral text-white">
           Stok menipis
         </span>
       ) : (
-        <span className="inline-block text-xs px-2 py-1 rounded-md bg-slate-100 text-slate-500">
+        <span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-white text-ink/60">
           Stok aman
         </span>
       )}
