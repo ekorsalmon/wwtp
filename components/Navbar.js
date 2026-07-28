@@ -19,7 +19,7 @@ const SECONDARY_LINKS = [
   { href: '/sv30-stp', label: 'SV30 STP' },
   { href: '/sv30-wwtp', label: 'SV30 WWTP' },
   { href: '/analisa-lab', label: 'Analisa' },
-  { href: '/logbook', label: 'Logbook' },
+  { href: '/neraca', label: 'Logbook' },
   { href: '/abt', label: 'ABT' },
   { href: '/f1-f4', label: 'F1 & F4' },
   { href: '/stok-kimia', label: 'Stok Kimia' },
