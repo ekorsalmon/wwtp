@@ -4,6 +4,7 @@ import { accentAt } from '@/lib/accents'
 import StatusCard from '@/components/StatusCard'
 import TrendChart from '@/components/TrendChart'
 import StockCard from '@/components/StockCard'
+import AttendanceGrid from '@/components/AttendanceGrid'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
@@ -42,6 +43,33 @@ export default async function DashboardPage() {
     .select('*, profiles(full_name)')
     .order('tanggal', { ascending: false })
     .limit(5)
+
+  const { data: profiles } = await supabase.from('profiles').select('id, full_name').order('full_name')
+
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const monthStart = new Date(year, month, 1).toISOString().slice(0, 10)
+  const monthEnd = new Date(year, month, daysInMonth).toISOString().slice(0, 10)
+
+  const { data: monthShifts } = await supabase
+    .from('shifts')
+    .select('*, profiles(full_name)')
+    .gte('tanggal', monthStart)
+    .lte('tanggal', monthEnd)
+
+  const shiftMap = {}
+  ;(monthShifts || []).forEach((s) => {
+    const day = new Date(s.tanggal).getDate()
+    if (!shiftMap[s.user_id]) shiftMap[s.user_id] = {}
+    shiftMap[s.user_id][day] = s.shift
+  })
+
+  const sundays = new Set()
+  for (let d = 1; d <= daysInMonth; d++) {
+    if (new Date(year, month, d).getDay() === 0) sundays.add(d)
+  }
 
   const latest = entries?.[0]
   const chronological = [...(entries || [])].reverse()
@@ -128,6 +156,29 @@ export default async function DashboardPage() {
         </div>
         <a href="/profile" className="text-xs text-brand font-semibold hover:underline mt-2 inline-block">
           Lihat & tambah kendala →
+        </a>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display text-base font-bold text-ink">Kehadiran & shift bulan ini</h2>
+          <ExportButton
+            data={(monthShifts || []).map((s) => ({
+              tanggal: s.tanggal,
+              nama: s.profiles?.full_name,
+              shift: s.shift,
+            }))}
+            filename="kehadiran-shift"
+            sheetName="Shift"
+          />
+        </div>
+        {profiles && profiles.length > 0 ? (
+          <AttendanceGrid profiles={profiles} shiftMap={shiftMap} daysInMonth={daysInMonth} sundays={sundays} />
+        ) : (
+          <div className="bg-white rounded-3xl p-8 text-center text-sm text-ink/40">Belum ada operator terdaftar.</div>
+        )}
+        <a href="/profile" className="text-xs text-brand font-semibold hover:underline mt-2 inline-block">
+          Atur shift →
         </a>
       </div>
 
