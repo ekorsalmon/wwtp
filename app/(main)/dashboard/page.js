@@ -28,6 +28,12 @@ export default async function DashboardPage() {
     .in('key', ['pac', 'naoh', 'polymer', 'kaporit', 'dca'])
     .order('label')
 
+  const { data: kendala } = await supabase
+    .from('work_issues')
+    .select('*, profiles(full_name)')
+    .order('tanggal', { ascending: false })
+    .limit(5)
+
   const latest = entries?.[0]
   const chronological = [...(entries || [])].reverse()
 
@@ -64,7 +70,7 @@ export default async function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="font-display text-base font-bold text-ink mb-3">Tren COD, 15 entri terakhir</h2>
+        <h2 className="font-display text-base font-bold text-ink mb-3">Tren parameter outlet, 15 entri terakhir</h2>
         {chronological.length > 0 ? (
           <TrendChart data={chronological} />
         ) : (
@@ -72,6 +78,42 @@ export default async function DashboardPage() {
             Belum ada data untuk ditampilkan.
           </div>
         )}
+      </div>
+
+      <div>
+        <h2 className="font-display text-base font-bold text-ink mb-3">Kendala terbaru</h2>
+        <div className="bg-white rounded-3xl divide-y divide-ink/5">
+          {(kendala || []).length === 0 ? (
+            <p className="text-sm text-ink/40 p-4">Belum ada kendala tercatat.</p>
+          ) : (
+            kendala.map((k) => (
+              <div key={k.id} className="px-4 py-3 text-sm flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-ink/80">{k.deskripsi}</p>
+                  <p className="text-xs text-ink/40 mt-1">
+                    {new Date(k.tanggal).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                    {' · '}
+                    {k.profiles?.full_name}
+                  </p>
+                </div>
+                <span
+                  className={`text-xs font-semibold px-2 py-1 rounded-full shrink-0 ${
+                    k.status === 'selesai' ? 'bg-mint text-ink' : 'bg-coral text-white'
+                  }`}
+                >
+                  {k.status === 'selesai' ? 'Selesai' : 'Belum selesai'}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+        <a href="/profile" className="text-xs text-brand font-semibold hover:underline mt-2 inline-block">
+          Lihat & tambah kendala →
+        </a>
       </div>
 
       <div>
