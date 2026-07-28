@@ -66,6 +66,7 @@ export default async function SludgePage() {
                     <span className={`font-semibold ${m.jenis === 'masuk' ? 'text-ink' : 'text-emerald-600'}`}>
                       {m.jenis === 'masuk' ? '+' : '-'}
                       {m.jumlah_kg} kg
+                      <span className="text-ink/40 font-normal"> · {(m.jumlah_kg / 1000).toFixed(2)} ton</span>
                     </span>
                   </div>
                   {m.jenis === 'masuk' && m.tanggal_kadaluarsa && (
