@@ -8,8 +8,8 @@ export default async function PembacaanJamPage() {
   const { data: meters } = await supabase.from('meters').select('*').order('label')
 
   const { data: recent } = await supabase
-    .from('hourly_readings')
-    .select('*, meters(label, unit)')
+    .from('hourly_readings_detail')
+    .select('*')
     .order('tanggal', { ascending: false })
     .order('jam', { ascending: false })
     .limit(30)
@@ -20,7 +20,7 @@ export default async function PembacaanJamPage() {
         <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">Pembacaan flowmeter & SV30</h1>
         <p className="text-sm text-ink/50 mt-1">
           Catat pembacaan tiap kali cek meteran. Jam dan tanggal yang sama akan memperbarui nilai
-          lama, bukan bikin baris dobel.
+          lama, bukan bikin baris dobel. Debit flowmeter dan rata-rata SV30 dihitung otomatis.
         </p>
       </div>
 
@@ -37,14 +37,16 @@ export default async function PembacaanJamPage() {
             {(recent || []).map((r) => (
               <div key={r.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <div>
-                  <p className="text-ink/80 font-medium">{r.meters?.label}</p>
+                  <p className="text-ink/80 font-medium">{r.label}</p>
                   <p className="text-xs text-ink/40">
                     {new Date(r.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} ·{' '}
                     {String(r.jam).padStart(2, '0')}:00
+                    {r.jenis === 'flowmeter' ? ` · FM: ${r.nilai}` : ''}
                   </p>
                 </div>
                 <span className="font-semibold text-ink">
-                  {r.nilai} <span className="text-ink/40 font-normal">{r.meters?.unit}</span>
+                  {r.jenis === 'flowmeter' ? (r.debit !== null ? r.debit : '—') : r.nilai}{' '}
+                  <span className="text-ink/40 font-normal">{r.unit}</span>
                 </span>
               </div>
             ))}

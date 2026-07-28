@@ -10,6 +10,8 @@ const LINKS = [
   { href: '/analisa-lab', label: 'Analisa lab' },
   { href: '/stok-kimia', label: 'Stok kimia' },
   { href: '/pembacaan-jam', label: 'Pembacaan jam' },
+  { href: '/sludge', label: 'Sludge B3' },
+  { href: '/curah-hujan', label: 'Curah hujan' },
 ]
 
 export default function Navbar({ fullName, role }) {

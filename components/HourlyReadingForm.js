@@ -24,6 +24,9 @@ export default function HourlyReadingForm({ meters }) {
   const router = useRouter()
   const supabase = createClient()
 
+  const selectedMeter = meters.find((m) => m.key === form.meter_key)
+  const isFlowmeter = selectedMeter?.jenis === 'flowmeter'
+
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
   }
@@ -109,7 +112,7 @@ export default function HourlyReadingForm({ meters }) {
         </div>
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="nilai">
-            Nilai
+            {isFlowmeter ? 'Angka meteran' : 'Nilai SV30'}
           </label>
           <input
             id="nilai"
@@ -122,6 +125,12 @@ export default function HourlyReadingForm({ meters }) {
           />
         </div>
       </div>
+
+      <p className="text-xs text-ink/40">
+        {isFlowmeter
+          ? 'Isi angka kumulatif yang tertera di layar meteran saat ini — bukan selisihnya. Debit per jam dihitung otomatis oleh sistem.'
+          : 'Isi hasil pengukuran pakai gelas ukur. Rata-rata harian dihitung otomatis oleh sistem.'}
+      </p>
 
       {status && (
         <p className={`text-sm font-medium ${status.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>

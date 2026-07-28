@@ -12,9 +12,12 @@ export default function DailyRecapTable({ meters }) {
   const today = new Date().toISOString().slice(0, 10)
   const [tanggal, setTanggal] = useState(today)
   const [meterKey, setMeterKey] = useState(meters[0]?.key || '')
-  const [readings, setReadings] = useState({})
+  const [rows, setRows] = useState({})
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
+
+  const meter = meters.find((m) => m.key === meterKey)
+  const isFlowmeter = meter?.jenis === 'flowmeter'
 
   useEffect(() => {
     if (!meterKey) return
@@ -23,17 +26,17 @@ export default function DailyRecapTable({ meters }) {
     setLoading(true)
 
     supabase
-      .from('hourly_readings')
-      .select('jam, nilai')
+      .from('hourly_readings_detail')
+      .select('jam, nilai, debit')
       .eq('tanggal', tanggal)
       .eq('meter_key', meterKey)
       .then(({ data }) => {
         if (!active) return
         const map = {}
         ;(data || []).forEach((r) => {
-          map[r.jam] = r.nilai
+          map[r.jam] = r
         })
-        setReadings(map)
+        setRows(map)
         setLoading(false)
       })
 
@@ -42,7 +45,14 @@ export default function DailyRecapTable({ meters }) {
     }
   }, [tanggal, meterKey])
 
-  const meter = meters.find((m) => m.key === meterKey)
+  const filledValues = HOURS.map((h) => rows[h]).filter(Boolean)
+  const total = isFlowmeter
+    ? filledValues.reduce((sum, r) => sum + (r.debit ?? 0), 0)
+    : null
+  const average =
+    !isFlowmeter && filledValues.length > 0
+      ? (filledValues.reduce((sum, r) => sum + Number(r.nilai || 0), 0) / filledValues.length).toFixed(2)
+      : null
 
   return (
     <div className="bg-white rounded-3xl p-5">
@@ -94,21 +104,34 @@ export default function DailyRecapTable({ meters }) {
             </thead>
             <tbody>
               <tr>
-                {HOURS.map((h) => (
-                  <td key={h} className="text-center px-2 py-2 border-t border-ink/5">
-                    {readings[h] !== undefined ? (
-                      <span className="font-semibold text-ink">{readings[h]}</span>
-                    ) : (
-                      <span className="text-ink/20">—</span>
-                    )}
-                  </td>
-                ))}
+                {HOURS.map((h) => {
+                  const r = rows[h]
+                  const shown = r ? (isFlowmeter ? r.debit : r.nilai) : null
+                  return (
+                    <td key={h} className="text-center px-2 py-2 border-t border-ink/5">
+                      {shown !== null && shown !== undefined ? (
+                        <span className="font-semibold text-ink">{shown}</span>
+                      ) : (
+                        <span className="text-ink/20">—</span>
+                      )}
+                    </td>
+                  )
+                })}
               </tr>
             </tbody>
           </table>
         </div>
       )}
-      {meter && <p className="text-xs text-ink/40 mt-3">Satuan: {meter.unit}</p>}
+
+      <div className="flex items-center justify-between mt-3">
+        {meter && <p className="text-xs text-ink/40">Satuan: {meter.unit}</p>}
+        {isFlowmeter && total !== null && (
+          <p className="text-sm font-semibold text-ink">Total hari ini: {total.toFixed(2)} {meter.unit}</p>
+        )}
+        {!isFlowmeter && average !== null && (
+          <p className="text-sm font-semibold text-ink">Rata-rata: {average} {meter.unit}</p>
+        )}
+      </div>
     </div>
   )
 }

@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const UNITS = ['STP1', 'WWTP1', 'RWTP', 'STP2', 'WWTP2']
-const TAHAP = ['Inlet', 'Equalisasi', 'Aerasi', 'Outlet']
+const TAHAP = ['Inlet', 'Equalisasi', 'Aerasi', 'R.A.S/Clarifier', 'Outlet']
+const SHIFTS = [
+  { value: '', label: 'Tidak ditentukan' },
+  { value: '1', label: 'Shift 1' },
+  { value: '2', label: 'Shift 2' },
+  { value: '3', label: 'Shift 3' },
+]
 
 const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
@@ -14,7 +20,8 @@ export default function LabAnalysisForm({ parameters }) {
   const today = new Date().toISOString().slice(0, 10)
   const [tanggal, setTanggal] = useState(today)
   const [unit, setUnit] = useState(UNITS[1])
-  const [tahapProses, setTahapProses] = useState(TAHAP[3])
+  const [tahapProses, setTahapProses] = useState(TAHAP[4])
+  const [shift, setShift] = useState('')
   const [values, setValues] = useState({})
   const [status, setStatus] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -31,13 +38,14 @@ export default function LabAnalysisForm({ parameters }) {
     } = await supabase.auth.getUser()
 
     const rows = parameters
-      .filter((p) => values[p.parameter] !== undefined && values[p.parameter] !== '')
+      .filter((p) => values[p.key] !== undefined && values[p.key] !== '')
       .map((p) => ({
         tanggal,
         unit,
         tahap_proses: tahapProses,
-        parameter: p.parameter,
-        nilai: Number(values[p.parameter]),
+        parameter: p.key,
+        nilai: Number(values[p.key]),
+        shift: shift ? Number(shift) : null,
         input_by: user.id,
       }))
 
@@ -65,7 +73,7 @@ export default function LabAnalysisForm({ parameters }) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-5 space-y-4">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="tanggal">
             Tanggal
@@ -107,6 +115,18 @@ export default function LabAnalysisForm({ parameters }) {
             ))}
           </select>
         </div>
+        <div>
+          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="shift">
+            Shift
+          </label>
+          <select id="shift" value={shift} onChange={(e) => setShift(e.target.value)} className={inputClass}>
+            {SHIFTS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="border-2 border-ink/10 rounded-2xl overflow-hidden">
@@ -115,15 +135,15 @@ export default function LabAnalysisForm({ parameters }) {
           <span>Nilai</span>
         </div>
         {parameters.map((p) => (
-          <div key={p.parameter} className="grid grid-cols-2 px-4 py-2 border-t border-ink/5 items-center">
+          <div key={p.key} className="grid grid-cols-2 px-4 py-2 border-t border-ink/5 items-center">
             <span className="text-sm text-ink/80">
-              {p.label} {p.unit ? <span className="text-ink/40">({p.unit})</span> : null}
+              {p.label} {p.satuan ? <span className="text-ink/40">({p.satuan})</span> : null}
             </span>
             <input
               type="number"
               step="0.01"
-              value={values[p.parameter] || ''}
-              onChange={(e) => setValues((v) => ({ ...v, [p.parameter]: e.target.value }))}
+              value={values[p.key] || ''}
+              onChange={(e) => setValues((v) => ({ ...v, [p.key]: e.target.value }))}
               className="border-2 border-ink/10 rounded-lg px-2 py-1.5 text-sm w-28 focus:outline-none focus:border-brand"
             />
           </div>
