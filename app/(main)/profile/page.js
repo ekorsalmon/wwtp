@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import ActivityForm from '@/components/ActivityForm'
 import IssueForm from '@/components/IssueForm'
 import ShiftForm from '@/components/ShiftForm'
+import ExportButton from '@/components/ExportButton'
+import DeleteButton from '@/components/DeleteButton'
 
 const RUTINITAS_LABEL = { H: 'Harian', M: 'Mingguan', B: 'Bulanan', S: 'Sewaktu-waktu', T: 'Tahunan' }
 
@@ -132,7 +134,10 @@ export default async function ProfilePage({ searchParams }) {
 
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <h3 className="font-display text-sm font-bold text-ink mb-3">Catatan aktivitas kerja</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-display text-sm font-bold text-ink">Catatan aktivitas kerja</h3>
+              <ExportButton data={activities} filename="aktivitas-kerja" sheetName="Aktivitas" />
+            </div>
             {canEdit && <ActivityForm targetUserId={targetUserId} />}
             <div className="bg-white rounded-3xl divide-y divide-ink/5 mt-4">
               {(activities || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada aktivitas.</p>}
@@ -140,11 +145,14 @@ export default async function ProfilePage({ searchParams }) {
                 <div key={a.id} className="px-4 py-3 text-sm">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-ink/80 font-medium">{a.aktivitas}</p>
-                    {a.rutinitas && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cream text-ink/60 shrink-0">
-                        {RUTINITAS_LABEL[a.rutinitas] || a.rutinitas}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {a.rutinitas && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cream text-ink/60">
+                          {RUTINITAS_LABEL[a.rutinitas] || a.rutinitas}
+                        </span>
+                      )}
+                      {canEdit && <DeleteButton table="work_activities" id={a.id} />}
+                    </div>
                   </div>
                   <p className="text-xs text-ink/40 mt-1">
                     {new Date(a.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -157,13 +165,19 @@ export default async function ProfilePage({ searchParams }) {
           </div>
 
           <div>
-            <h3 className="font-display text-sm font-bold text-ink mb-3">Kendala</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-display text-sm font-bold text-ink">Kendala</h3>
+              <ExportButton data={issues} filename="kendala-operator" sheetName="Kendala" />
+            </div>
             {canEdit && <IssueForm targetUserId={targetUserId} />}
             <div className="bg-white rounded-3xl divide-y divide-ink/5 mt-4">
               {(issues || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada kendala tercatat.</p>}
               {(issues || []).map((i) => (
                 <div key={i.id} className="px-4 py-3 text-sm">
-                  <p className="text-ink/80">{i.deskripsi}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-ink/80">{i.deskripsi}</p>
+                    {canEdit && <DeleteButton table="work_issues" id={i.id} />}
+                  </div>
                   <p className="text-xs text-ink/40 mt-1">
                     {new Date(i.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     {' · '}

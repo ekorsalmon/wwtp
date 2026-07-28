@@ -4,6 +4,8 @@ import { accentAt } from '@/lib/accents'
 import StatusCard from '@/components/StatusCard'
 import TrendChart from '@/components/TrendChart'
 import StockCard from '@/components/StockCard'
+import ExportButton from '@/components/ExportButton'
+import DeleteButton from '@/components/DeleteButton'
 
 const OUTLET_PARAMS = [
   { key: 'ph', label: 'pH outlet', unit: '' },
@@ -14,6 +16,13 @@ const OUTLET_PARAMS = [
 
 export default async function DashboardPage() {
   const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { data: myProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const isAtasan = myProfile?.role === 'atasan'
 
   const { data: entries } = await supabase
     .from('daily_water_quality')
@@ -81,7 +90,10 @@ export default async function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="font-display text-base font-bold text-ink mb-3">Kendala terbaru</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display text-base font-bold text-ink">Kendala terbaru</h2>
+          <ExportButton data={kendala} filename="kendala-terbaru" sheetName="Kendala" />
+        </div>
         <div className="bg-white rounded-3xl divide-y divide-ink/5">
           {(kendala || []).length === 0 ? (
             <p className="text-sm text-ink/40 p-4">Belum ada kendala tercatat.</p>
@@ -100,13 +112,16 @@ export default async function DashboardPage() {
                     {k.profiles?.full_name}
                   </p>
                 </div>
-                <span
-                  className={`text-xs font-semibold px-2 py-1 rounded-full shrink-0 ${
-                    k.status === 'selesai' ? 'bg-mint text-ink' : 'bg-coral text-white'
-                  }`}
-                >
-                  {k.status === 'selesai' ? 'Selesai' : 'Belum selesai'}
-                </span>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                      k.status === 'selesai' ? 'bg-mint text-ink' : 'bg-coral text-white'
+                    }`}
+                  >
+                    {k.status === 'selesai' ? 'Selesai' : 'Belum selesai'}
+                  </span>
+                  {(isAtasan || k.user_id === user.id) && <DeleteButton table="work_issues" id={k.id} />}
+                </div>
               </div>
             ))
           )}

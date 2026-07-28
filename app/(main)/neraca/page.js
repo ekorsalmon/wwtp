@@ -1,9 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
+import ExportButton from '@/components/ExportButton'
 
-function Table({ title, unitLabel, rows }) {
+function Table({ title, unitLabel, rows, filename }) {
   return (
     <div>
-      <h2 className="font-display text-base font-bold text-ink mb-3">{title}</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-display text-base font-bold text-ink">{title}</h2>
+        <ExportButton data={rows} filename={filename} sheetName="Neraca" />
+      </div>
       <div className="bg-white rounded-3xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-cream text-xs text-ink/50">
@@ -55,8 +59,8 @@ export default async function NeracaPage() {
         </p>
       </div>
 
-      <Table title="Bahan kimia pengujian (reagen lab)" unitLabel="pcs" rows={pengujian} />
-      <Table title="Bahan kimia proses WWTP" unitLabel="kg" rows={proses} />
+      <Table title="Bahan kimia pengujian (reagen lab)" unitLabel="pcs" rows={pengujian} filename="neraca-reagen-lab" />
+      <Table title="Bahan kimia proses WWTP" unitLabel="kg" rows={proses} filename="neraca-bahan-proses" />
     </div>
   )
 }

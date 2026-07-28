@@ -1,9 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 import HourlyReadingForm from '@/components/HourlyReadingForm'
 import DailyRecapTable from '@/components/DailyRecapTable'
+import ExportButton from '@/components/ExportButton'
+import DeleteButton from '@/components/DeleteButton'
 
 export default async function MeterPageContent({ title, description, meterKeys }) {
   const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { data: myProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const isAtasan = myProfile?.role === 'atasan'
 
   const { data: meters } = await supabase.from('meters').select('*').in('key', meterKeys).order('label')
 
@@ -29,13 +38,16 @@ export default async function MeterPageContent({ title, description, meterKeys }
         </div>
 
         <div>
-          <h2 className="font-display text-base font-bold text-ink mb-3">Riwayat terakhir</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
+            <ExportButton data={recent} filename={`pembacaan-${title.toLowerCase().replace(/\s+/g, '-')}`} sheetName="Pembacaan" />
+          </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(recent || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada pembacaan.</p>}
             {(recent || []).map((r) => {
               const isFlowmeterType = r.jenis === 'flowmeter' || r.jenis === 'flowmeter_harian'
               return (
-                <div key={r.id} className="flex items-center justify-between px-4 py-3 text-sm">
+                <div key={r.id} className="flex items-center justify-between px-4 py-3 text-sm gap-3">
                   <div>
                     <p className="text-ink/80 font-medium">{r.label}</p>
                     <p className="text-xs text-ink/40">
@@ -44,10 +56,13 @@ export default async function MeterPageContent({ title, description, meterKeys }
                       {isFlowmeterType ? ` · FM: ${r.nilai}` : ''}
                     </p>
                   </div>
-                  <span className="font-semibold text-ink">
-                    {isFlowmeterType ? (r.debit !== null ? r.debit : '—') : r.nilai}{' '}
-                    <span className="text-ink/40 font-normal">{r.unit}</span>
-                  </span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-semibold text-ink">
+                      {isFlowmeterType ? (r.debit !== null ? r.debit : '—') : r.nilai}{' '}
+                      <span className="text-ink/40 font-normal">{r.unit}</span>
+                    </span>
+                    {isAtasan && <DeleteButton table="hourly_readings" id={r.id} />}
+                  </div>
                 </div>
               )
             })}
