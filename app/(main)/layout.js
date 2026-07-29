@@ -2,6 +2,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
 
+// Semua halaman di dalam sini (dashboard, profile, dll) harus selalu ambil
+// data terbaru tiap kali dibuka — bukan versi ke-cache. Tanpa ini, Next.js
+// kadang nampilin data lama walau baru aja berhasil disimpan.
+export const dynamic = 'force-dynamic'
+
 export default async function MainLayout({ children }) {
   const supabase = await createClient()
   const {
