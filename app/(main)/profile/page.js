@@ -7,6 +7,8 @@ import MyShiftPicker from '@/components/MyShiftPicker'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
+export const dynamic = 'force-dynamic'
+
 const RUTINITAS_LABEL = { H: 'Harian', M: 'Mingguan', B: 'Bulanan', S: 'Sewaktu-waktu', T: 'Tahunan' }
 
 export default async function ProfilePage({ searchParams }) {

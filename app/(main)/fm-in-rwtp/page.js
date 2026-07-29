@@ -1,5 +1,7 @@
 import MeterPageContent from '@/components/MeterPageContent'
 
+export const dynamic = 'force-dynamic'
+
 export default function FmInRwtpPage() {
   return (
     <MeterPageContent

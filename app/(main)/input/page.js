@@ -3,6 +3,8 @@ import DataForm from '@/components/DataForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
+export const dynamic = 'force-dynamic'
+
 export default async function InputPage() {
   const supabase = await createClient()
 

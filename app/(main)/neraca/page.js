@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import ExportButton from '@/components/ExportButton'
 
+export const dynamic = 'force-dynamic'
+
 function Table({ title, unitLabel, rows, filename }) {
   return (
     <div>

@@ -3,6 +3,8 @@ import RainfallForm from '@/components/RainfallForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CurahHujanPage() {
   const supabase = await createClient()
 

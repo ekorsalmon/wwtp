@@ -9,6 +9,8 @@ import AttendanceGrid from '@/components/AttendanceGrid'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
+export const dynamic = 'force-dynamic'
+
 const OUTLET_PARAMS = [
   { key: 'ph', label: 'pH outlet', unit: '' },
   { key: 'cod', label: 'COD outlet', unit: 'mg/L' },

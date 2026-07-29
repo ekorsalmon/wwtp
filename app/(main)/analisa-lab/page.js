@@ -4,6 +4,8 @@ import LabAnalysisForm from '@/components/LabAnalysisForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
+export const dynamic = 'force-dynamic'
+
 const STATUS_LABEL = {
   ok: { text: 'Sesuai', className: 'bg-mint text-ink' },
   violation: { text: 'Di luar', className: 'bg-coral text-white' },

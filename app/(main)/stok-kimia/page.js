@@ -5,6 +5,8 @@ import ChemicalMovementForm from '@/components/ChemicalMovementForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StokKimiaPage() {
   const supabase = await createClient()
 
