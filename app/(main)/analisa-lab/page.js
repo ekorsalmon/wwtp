@@ -5,15 +5,6 @@ import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 import { formatTanggalExport } from '@/lib/export-excel'
 
-const ANALISA_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'shift', label: 'Shift', format: (v) => (v ? `Shift ${v}` : '') },
-  { key: 'unit', label: 'Unit' },
-  { key: 'tahap_proses', label: 'Tahap Proses' },
-  { key: 'parameter', label: 'Parameter' },
-  { key: 'nilai', label: 'Nilai' },
-]
-
 export const dynamic = 'force-dynamic'
 
 const STATUS_LABEL = {
@@ -42,6 +33,15 @@ export default async function AnalisaLabPage() {
     .order('created_at', { ascending: false })
     .limit(30)
 
+  const exportRows = (recent || []).map((r) => ({
+    Tanggal: formatTanggalExport(r.tanggal),
+    Shift: r.shift ? `Shift ${r.shift}` : '',
+    Unit: r.unit,
+    'Tahap Proses': r.tahap_proses,
+    Parameter: r.parameter,
+    Nilai: r.nilai,
+  }))
+
   return (
     <div className="space-y-8">
       <div>
@@ -57,7 +57,7 @@ export default async function AnalisaLabPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-base font-bold text-ink">Data terakhir</h2>
-          <ExportButton data={recent} filename="analisa-lab-wwtp" columns={ANALISA_COLUMNS} />
+          <ExportButton data={exportRows} filename="analisa-lab-wwtp" />
         </div>
         <div className="bg-white rounded-3xl overflow-hidden">
           {(recent || []).length === 0 ? (

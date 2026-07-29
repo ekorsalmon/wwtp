@@ -12,13 +12,6 @@ import { formatTanggalExport } from '@/lib/export-excel'
 
 export const dynamic = 'force-dynamic'
 
-const KENDALA_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'deskripsi', label: 'Kendala' },
-  { key: 'profiles', label: 'Dilaporkan Oleh', format: (v) => v?.full_name || '' },
-  { key: 'status', label: 'Status', format: (v) => (v === 'selesai' ? 'Selesai' : 'Belum Selesai') },
-]
-
 const OUTLET_PARAMS = [
   { key: 'ph', label: 'pH outlet', unit: '' },
   { key: 'cod', label: 'COD outlet', unit: 'mg/L' },
@@ -80,6 +73,13 @@ export default async function DashboardPage() {
   const latest = entries?.[0]
   const chronological = [...(entries || [])].reverse()
 
+  const kendalaExportRows = (kendala || []).map((k) => ({
+    Tanggal: formatTanggalExport(k.tanggal),
+    Kendala: k.deskripsi,
+    'Dilaporkan Oleh': k.profiles?.full_name || '',
+    Status: k.status === 'selesai' ? 'Selesai' : 'Belum Selesai',
+  }))
+
   return (
     <div className="space-y-10">
       <div>
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-base font-bold text-ink">Kendala terbaru</h2>
-          <ExportButton data={kendala} filename="kendala-terbaru" columns={KENDALA_COLUMNS} />
+          <ExportButton data={kendalaExportRows} filename="kendala-terbaru" />
         </div>
         <div className="bg-white rounded-3xl divide-y divide-ink/5">
           {(kendala || []).length === 0 ? (
@@ -170,16 +170,11 @@ export default async function DashboardPage() {
           <h2 className="font-display text-base font-bold text-ink">Kehadiran & shift bulan ini</h2>
           <ExportButton
             data={(monthShifts || []).map((s) => ({
-              tanggal: formatTanggalExport(s.tanggal),
-              nama: s.profiles?.full_name,
-              shift: s.shift === 'pagi' ? 'Pagi' : 'Malam',
+              Tanggal: formatTanggalExport(s.tanggal),
+              Nama: s.profiles?.full_name,
+              Shift: s.shift === 'pagi' ? 'Pagi' : 'Malam',
             }))}
             filename="kehadiran-shift"
-            columns={[
-              { key: 'tanggal', label: 'Tanggal' },
-              { key: 'nama', label: 'Nama' },
-              { key: 'shift', label: 'Shift' },
-            ]}
           />
         </div>
         {profiles && profiles.length > 0 ? (

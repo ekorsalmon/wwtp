@@ -4,12 +4,6 @@ import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 import { formatTanggalExport } from '@/lib/export-excel'
 
-const RAINFALL_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'libur', label: 'Libur', format: (v) => (v ? 'Ya' : 'Tidak') },
-  { key: 'curah_hujan_mm', label: 'Curah Hujan (mm)' },
-]
-
 export const dynamic = 'force-dynamic'
 
 export default async function CurahHujanPage() {
@@ -28,6 +22,12 @@ export default async function CurahHujanPage() {
     .order('tanggal', { ascending: false })
     .limit(31)
 
+  const exportRows = (recent || []).map((r) => ({
+    Tanggal: formatTanggalExport(r.tanggal),
+    Libur: r.libur ? 'Ya' : 'Tidak',
+    'Curah Hujan (mm)': r.curah_hujan_mm ?? '',
+  }))
+
   return (
     <div className="space-y-8">
       <div>
@@ -44,7 +44,7 @@ export default async function CurahHujanPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-            <ExportButton data={recent} filename="curah-hujan-wwtp" columns={RAINFALL_COLUMNS} />
+            <ExportButton data={exportRows} filename="curah-hujan-wwtp" />
           </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(recent || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada data.</p>}

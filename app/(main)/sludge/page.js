@@ -5,20 +5,6 @@ import SludgeMovementForm from '@/components/SludgeMovementForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
-const SLUDGE_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'area', label: 'Plant' },
-  { key: 'jenis', label: 'Jenis' },
-  { key: 'jumlah_kg', label: 'Jumlah (Kg)' },
-  { key: 'sumber', label: 'Sumber Limbah' },
-  { key: 'tanggal_kadaluarsa', label: 'Batas Simpan', format: formatTanggalExport },
-  { key: 'perusahaan_pengangkut', label: 'Perusahaan Pengangkut' },
-  { key: 'nopol_kendaraan', label: 'Nopol Kendaraan' },
-  { key: 'tujuan_penyerahan', label: 'Tujuan Penyerahan' },
-  { key: 'bukti_dokumen', label: 'Bukti Dokumen' },
-  { key: 'keterangan', label: 'Keterangan' },
-]
-
 export const dynamic = 'force-dynamic'
 
 export default async function SludgePage() {
@@ -43,6 +29,20 @@ export default async function SludgePage() {
     .limit(30)
 
   const today = todayWIB()
+
+  const sludgeExportRows = (movements || []).map((m) => ({
+    Tanggal: formatTanggalExport(m.tanggal),
+    Plant: m.area,
+    Jenis: m.jenis,
+    'Jumlah (Kg)': m.jumlah_kg,
+    'Sumber Limbah': m.sumber || '',
+    'Batas Simpan': formatTanggalExport(m.tanggal_kadaluarsa),
+    'Perusahaan Pengangkut': m.perusahaan_pengangkut || '',
+    'Nopol Kendaraan': m.nopol_kendaraan || '',
+    'Tujuan Penyerahan': m.tujuan_penyerahan || '',
+    'Bukti Dokumen': m.bukti_dokumen || '',
+    Keterangan: m.keterangan || '',
+  }))
 
   return (
     <div className="space-y-8">
@@ -79,7 +79,7 @@ export default async function SludgePage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-            <ExportButton data={movements} filename="sludge-limbah-b3" columns={SLUDGE_COLUMNS} />
+            <ExportButton data={sludgeExportRows} filename="sludge-limbah-b3" />
           </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(movements || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada transaksi.</p>}

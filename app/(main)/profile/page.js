@@ -12,23 +12,6 @@ export const dynamic = 'force-dynamic'
 
 const RUTINITAS_LABEL = { H: 'Harian', M: 'Mingguan', B: 'Bulanan', S: 'Sewaktu-waktu', T: 'Tahunan' }
 
-const ACTIVITY_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'aktivitas', label: 'Aktivitas' },
-  { key: 'rutinitas', label: 'Rutinitas', format: (v) => RUTINITAS_LABEL[v] || v || '' },
-  { key: 'alat_kerja', label: 'Alat Kerja' },
-  { key: 'rekan_kerja', label: 'Rekan Kerja' },
-  { key: 'lokasi_kerja', label: 'Lokasi Kerja' },
-  { key: 'hasil', label: 'Hasil' },
-  { key: 'status', label: 'Status', format: (v) => (v === 'selesai' ? 'Selesai' : 'Masih Proses') },
-]
-
-const ISSUE_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'deskripsi', label: 'Kendala' },
-  { key: 'status', label: 'Status', format: (v) => (v === 'selesai' ? 'Selesai' : 'Belum Selesai') },
-]
-
 export default async function ProfilePage({ searchParams }) {
   const supabase = await createClient()
 
@@ -73,6 +56,23 @@ export default async function ProfilePage({ searchParams }) {
   const shiftPagi = (todayShifts || []).filter((s) => s.shift === 'pagi')
   const shiftMalam = (todayShifts || []).filter((s) => s.shift === 'malam')
   const myShift = (todayShifts || []).find((s) => s.user_id === user.id)?.shift || null
+
+  const activityExportRows = (activities || []).map((a) => ({
+    Tanggal: formatTanggalExport(a.tanggal),
+    Aktivitas: a.aktivitas,
+    Rutinitas: RUTINITAS_LABEL[a.rutinitas] || a.rutinitas || '',
+    'Alat Kerja': a.alat_kerja || '',
+    'Rekan Kerja': a.rekan_kerja || '',
+    'Lokasi Kerja': a.lokasi_kerja || '',
+    Hasil: a.hasil || '',
+    Status: a.status === 'selesai' ? 'Selesai' : 'Masih Proses',
+  }))
+
+  const issueExportRows = (issues || []).map((i) => ({
+    Tanggal: formatTanggalExport(i.tanggal),
+    Kendala: i.deskripsi,
+    Status: i.status === 'selesai' ? 'Selesai' : 'Belum Selesai',
+  }))
 
   return (
     <div className="space-y-8">
@@ -166,7 +166,7 @@ export default async function ProfilePage({ searchParams }) {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-display text-sm font-bold text-ink">Catatan aktivitas kerja</h3>
-              <ExportButton data={activities} filename="aktivitas-kerja" columns={ACTIVITY_COLUMNS} />
+              <ExportButton data={activityExportRows} filename="aktivitas-kerja" />
             </div>
             {canEdit && <ActivityForm targetUserId={targetUserId} />}
             <div className="bg-white rounded-3xl divide-y divide-ink/5 mt-4">
@@ -197,7 +197,7 @@ export default async function ProfilePage({ searchParams }) {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-display text-sm font-bold text-ink">Kendala</h3>
-              <ExportButton data={issues} filename="kendala-operator" columns={ISSUE_COLUMNS} />
+              <ExportButton data={issueExportRows} filename="kendala-operator" />
             </div>
             {canEdit && <IssueForm targetUserId={targetUserId} />}
             <div className="bg-white rounded-3xl divide-y divide-ink/5 mt-4">

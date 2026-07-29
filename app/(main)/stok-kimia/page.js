@@ -6,16 +6,6 @@ import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 import { formatTanggalExport } from '@/lib/export-excel'
 
-const STOK_COLUMNS = [
-  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
-  { key: 'chemicals', label: 'Bahan Kimia', format: (v) => v?.label || '' },
-  { key: 'jenis', label: 'Jenis' },
-  { key: 'jumlah', label: 'Jumlah' },
-  { key: 'chemicals', label: 'Satuan', format: (v) => v?.satuan || '' },
-  { key: 'unit', label: 'Dipakai di Unit' },
-  { key: 'keterangan', label: 'Keterangan' },
-]
-
 export const dynamic = 'force-dynamic'
 
 export default async function StokKimiaPage() {
@@ -39,6 +29,16 @@ export default async function StokKimiaPage() {
     .order('tanggal', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(30)
+
+  const exportRows = (movements || []).map((m) => ({
+    Tanggal: formatTanggalExport(m.tanggal),
+    'Bahan Kimia': m.chemicals?.label || '',
+    Jenis: m.jenis,
+    Jumlah: m.jumlah,
+    Satuan: m.chemicals?.satuan || '',
+    'Dipakai di Unit': m.unit || '',
+    Keterangan: m.keterangan || '',
+  }))
 
   return (
     <div className="space-y-8">
@@ -74,7 +74,7 @@ export default async function StokKimiaPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-            <ExportButton data={movements} filename="stok-kimia-wwtp" columns={STOK_COLUMNS} />
+            <ExportButton data={exportRows} filename="stok-kimia-wwtp" />
           </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(movements || []).length === 0 && (
