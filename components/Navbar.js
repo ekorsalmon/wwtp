@@ -29,6 +29,7 @@ const ALL_LINKS = [
   { href: '/dashboard', label: 'HOME' },
   { href: '/input', label: 'DATA' },
   { href: '/profile', label: 'Profile' },
+  { href: '/kelola-user', label: 'Kelola User' },
   ...WORKS_LINKS,
 ]
 
@@ -111,6 +112,15 @@ export default function Navbar({ fullName, role }) {
               >
                 Profile
               </a>
+
+              {role === 'atasan' && (
+                <a
+                  href="/kelola-user"
+                  className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
+                >
+                  Kelola User
+                </a>
+              )}
             </nav>
           </div>
 
