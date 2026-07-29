@@ -75,7 +75,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">Dashboard WWTP P1</h1>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink">Dashboard Environmental Sustainability (ES)</h1>
         <p className="text-sm text-ink/50 mt-1">
           {latest
             ? `Data terakhir: ${new Date(latest.tanggal).toLocaleDateString('id-ID', {
