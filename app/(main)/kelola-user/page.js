@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import CreateUserForm from '@/components/CreateUserForm'
 import RoleSelect from '@/components/RoleSelect'
+import DeleteUserButton from '@/components/DeleteUserButton'
 
 export default async function KelolaUserPage() {
   const supabase = await createClient()
@@ -59,12 +60,16 @@ export default async function KelolaUserPage() {
                     : ''}
                 </p>
               </div>
-              <RoleSelect userId={u.id} currentRole={u.role} disabled={u.id === user.id} />
+              <div className="flex items-center gap-3 shrink-0">
+                <RoleSelect userId={u.id} currentRole={u.role} disabled={u.id === user.id} />
+                {u.id !== user.id && <DeleteUserButton userId={u.id} fullName={u.full_name} />}
+              </div>
             </div>
           ))}
         </div>
         <p className="text-xs text-ink/40 mt-2">
-          Role akun sendiri gak bisa diubah dari sini (biar gak ke-lock keluar gak sengaja).
+          Role dan penghapusan akun sendiri gak bisa dilakukan dari sini (biar gak ke-lock keluar
+          gak sengaja).
         </p>
       </div>
     </div>
