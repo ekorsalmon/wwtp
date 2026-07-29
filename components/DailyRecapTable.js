@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { todayWIB } from '@/lib/date'
 
 const inputClass =
   'border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
@@ -9,7 +10,7 @@ const inputClass =
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 
 export default function DailyRecapTable({ meters }) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
   const [tanggal, setTanggal] = useState(today)
   const [meterKey, setMeterKey] = useState(meters[0]?.key || '')
   const [hourRows, setHourRows] = useState({})

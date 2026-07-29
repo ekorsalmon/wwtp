@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { todayWIB } from '@/lib/date'
 
 const RUTINITAS_OPTIONS = [
   { value: 'H', label: 'H - Harian' },
@@ -16,7 +17,7 @@ const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
 
 export default function ActivityForm({ targetUserId }) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
   const [form, setForm] = useState({
     tanggal: today,
     aktivitas: '',

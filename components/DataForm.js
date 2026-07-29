@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { todayWIB } from '@/lib/date'
 
 const FIELDS = [
   { key: 'ph', label: 'pH' },
@@ -20,7 +21,7 @@ const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
 
 export default function DataForm() {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
   const [form, setForm] = useState({ tanggal: today, area: 'WWTP 1', catatan: '' })
   const [status, setStatus] = useState(null)
   const [saving, setSaving] = useState(false)

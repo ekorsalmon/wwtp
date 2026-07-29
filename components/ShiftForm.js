@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { todayWIB } from '@/lib/date'
 
 const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
 
 export default function ShiftForm({ profiles }) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
   const [tanggal, setTanggal] = useState(today)
   const [userId, setUserId] = useState(profiles[0]?.id || '')
   const [shift, setShift] = useState('pagi')

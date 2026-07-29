@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { evaluateStatus } from '@/lib/baku-mutu'
 import { accentAt } from '@/lib/accents'
+import { monthRangeWIB } from '@/lib/date'
 import StatusCard from '@/components/StatusCard'
 import TrendChart from '@/components/TrendChart'
 import StockCard from '@/components/StockCard'
@@ -46,12 +47,7 @@ export default async function DashboardPage() {
 
   const { data: profiles } = await supabase.from('profiles').select('id, full_name').order('full_name')
 
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = now.getMonth()
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
-  const monthStart = new Date(year, month, 1).toISOString().slice(0, 10)
-  const monthEnd = new Date(year, month, daysInMonth).toISOString().slice(0, 10)
+  const { year, month, daysInMonth, monthStart, monthEnd } = monthRangeWIB()
 
   const { data: monthShifts } = await supabase
     .from('shifts')

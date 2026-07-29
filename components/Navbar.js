@@ -67,9 +67,7 @@ export default function Navbar({ fullName, role }) {
     <header className="bg-cream relative z-20">
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-4 min-w-0">
-          <span className="font-display font-extrabold text-lg tracking-tight text-ink shrink-0">
-            WWTP <span className="text-brand">P1</span>
-          </span>
+          <img src="/logo.png" alt="Pratama" className="h-8 w-auto shrink-0" />
 
           <nav className="flex items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10 shrink-0">
             <a

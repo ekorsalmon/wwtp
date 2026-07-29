@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
+import { todayWIB } from '@/lib/date'
 import ActivityForm from '@/components/ActivityForm'
 import IssueForm from '@/components/IssueForm'
 import ShiftForm from '@/components/ShiftForm'
+import MyShiftPicker from '@/components/MyShiftPicker'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
 
@@ -42,7 +44,7 @@ export default async function ProfilePage({ searchParams }) {
     .order('tanggal', { ascending: false })
     .limit(10)
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
   const { data: todayShifts } = await supabase
     .from('shifts')
     .select('*, profiles(full_name)')
@@ -50,6 +52,7 @@ export default async function ProfilePage({ searchParams }) {
 
   const shiftPagi = (todayShifts || []).filter((s) => s.shift === 'pagi')
   const shiftMalam = (todayShifts || []).filter((s) => s.shift === 'malam')
+  const myShift = (todayShifts || []).find((s) => s.user_id === user.id)?.shift || null
 
   return (
     <div className="space-y-8">
@@ -86,7 +89,14 @@ export default async function ProfilePage({ searchParams }) {
             )}
           </div>
         </div>
-        {isAtasan && <ShiftForm profiles={profiles || []} />}
+        <MyShiftPicker currentShift={myShift} />
+
+        {isAtasan && (
+          <div className="mt-4">
+            <p className="text-xs text-ink/40 mb-2">Atau atur shift orang lain di sini:</p>
+            <ShiftForm profiles={profiles || []} />
+          </div>
+        )}
       </div>
 
       <div>

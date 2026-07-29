@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { todayWIB } from '@/lib/date'
 import SludgeMovementForm from '@/components/SludgeMovementForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
@@ -24,7 +25,7 @@ export default async function SludgePage() {
     .order('created_at', { ascending: false })
     .limit(30)
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
 
   return (
     <div className="space-y-8">

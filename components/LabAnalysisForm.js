@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { todayWIB } from '@/lib/date'
 
 const UNITS = ['STP1', 'WWTP1', 'RWTP', 'STP2', 'WWTP2']
 const TAHAP = ['Inlet', 'Equalisasi', 'Aerasi', 'R.A.S/Clarifier', 'Outlet']
@@ -17,7 +18,7 @@ const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
 
 export default function LabAnalysisForm({ parameters }) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayWIB()
   const [tanggal, setTanggal] = useState(today)
   const [unit, setUnit] = useState(UNITS[1])
   const [tahapProses, setTahapProses] = useState(TAHAP[4])
