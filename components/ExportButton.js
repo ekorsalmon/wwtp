@@ -2,9 +2,9 @@
 
 import { exportToExcel } from '@/lib/export-excel'
 
-export default function ExportButton({ data, filename, sheetName }) {
+export default function ExportButton({ data, filename, columns }) {
   function handleExport() {
-    exportToExcel(data, filename, sheetName)
+    exportToExcel(data, filename, columns)
   }
 
   return (

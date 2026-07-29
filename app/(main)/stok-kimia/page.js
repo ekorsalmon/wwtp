@@ -4,6 +4,17 @@ import StockCard from '@/components/StockCard'
 import ChemicalMovementForm from '@/components/ChemicalMovementForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
+import { formatTanggalExport } from '@/lib/export-excel'
+
+const STOK_COLUMNS = [
+  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
+  { key: 'chemicals', label: 'Bahan Kimia', format: (v) => v?.label || '' },
+  { key: 'jenis', label: 'Jenis' },
+  { key: 'jumlah', label: 'Jumlah' },
+  { key: 'chemicals', label: 'Satuan', format: (v) => v?.satuan || '' },
+  { key: 'unit', label: 'Dipakai di Unit' },
+  { key: 'keterangan', label: 'Keterangan' },
+]
 
 export const dynamic = 'force-dynamic'
 
@@ -63,7 +74,7 @@ export default async function StokKimiaPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-            <ExportButton data={movements} filename="stok-kimia-wwtp" sheetName="Stok Kimia" />
+            <ExportButton data={movements} filename="stok-kimia-wwtp" columns={STOK_COLUMNS} />
           </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(movements || []).length === 0 && (

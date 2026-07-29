@@ -8,8 +8,16 @@ import StockCard from '@/components/StockCard'
 import AttendanceGrid from '@/components/AttendanceGrid'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
+import { formatTanggalExport } from '@/lib/export-excel'
 
 export const dynamic = 'force-dynamic'
+
+const KENDALA_COLUMNS = [
+  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
+  { key: 'deskripsi', label: 'Kendala' },
+  { key: 'profiles', label: 'Dilaporkan Oleh', format: (v) => v?.full_name || '' },
+  { key: 'status', label: 'Status', format: (v) => (v === 'selesai' ? 'Selesai' : 'Belum Selesai') },
+]
 
 const OUTLET_PARAMS = [
   { key: 'ph', label: 'pH outlet', unit: '' },
@@ -118,7 +126,7 @@ export default async function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-base font-bold text-ink">Kendala terbaru</h2>
-          <ExportButton data={kendala} filename="kendala-terbaru" sheetName="Kendala" />
+          <ExportButton data={kendala} filename="kendala-terbaru" columns={KENDALA_COLUMNS} />
         </div>
         <div className="bg-white rounded-3xl divide-y divide-ink/5">
           {(kendala || []).length === 0 ? (
@@ -162,12 +170,16 @@ export default async function DashboardPage() {
           <h2 className="font-display text-base font-bold text-ink">Kehadiran & shift bulan ini</h2>
           <ExportButton
             data={(monthShifts || []).map((s) => ({
-              tanggal: s.tanggal,
+              tanggal: formatTanggalExport(s.tanggal),
               nama: s.profiles?.full_name,
-              shift: s.shift,
+              shift: s.shift === 'pagi' ? 'Pagi' : 'Malam',
             }))}
             filename="kehadiran-shift"
-            sheetName="Shift"
+            columns={[
+              { key: 'tanggal', label: 'Tanggal' },
+              { key: 'nama', label: 'Nama' },
+              { key: 'shift', label: 'Shift' },
+            ]}
           />
         </div>
         {profiles && profiles.length > 0 ? (

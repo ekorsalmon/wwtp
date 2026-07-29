@@ -3,6 +3,16 @@ import { evaluateStatus, unitTipeFor } from '@/lib/baku-mutu'
 import LabAnalysisForm from '@/components/LabAnalysisForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
+import { formatTanggalExport } from '@/lib/export-excel'
+
+const ANALISA_COLUMNS = [
+  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
+  { key: 'shift', label: 'Shift', format: (v) => (v ? `Shift ${v}` : '') },
+  { key: 'unit', label: 'Unit' },
+  { key: 'tahap_proses', label: 'Tahap Proses' },
+  { key: 'parameter', label: 'Parameter' },
+  { key: 'nilai', label: 'Nilai' },
+]
 
 export const dynamic = 'force-dynamic'
 
@@ -47,7 +57,7 @@ export default async function AnalisaLabPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-display text-base font-bold text-ink">Data terakhir</h2>
-          <ExportButton data={recent} filename="analisa-lab-wwtp" sheetName="Analisa Lab" />
+          <ExportButton data={recent} filename="analisa-lab-wwtp" columns={ANALISA_COLUMNS} />
         </div>
         <div className="bg-white rounded-3xl overflow-hidden">
           {(recent || []).length === 0 ? (

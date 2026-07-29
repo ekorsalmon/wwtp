@@ -2,6 +2,31 @@ import { createClient } from '@/lib/supabase/server'
 import DataForm from '@/components/DataForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
+import { formatTanggalExport } from '@/lib/export-excel'
+
+const DATA_COLUMNS = [
+  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
+  { key: 'area', label: 'Area' },
+  { key: 'ph_inlet', label: 'pH Inlet' },
+  { key: 'ph_outlet', label: 'pH Outlet' },
+  { key: 'temp_inlet', label: 'Suhu Inlet (C)' },
+  { key: 'temp_outlet', label: 'Suhu Outlet (C)' },
+  { key: 'cod_inlet', label: 'COD Inlet (mg/L)' },
+  { key: 'cod_outlet', label: 'COD Outlet (mg/L)' },
+  { key: 'do_inlet', label: 'DO Inlet (mg/L)' },
+  { key: 'do_outlet', label: 'DO Outlet (mg/L)' },
+  { key: 'tss_inlet', label: 'TSS Inlet (mg/L)' },
+  { key: 'tss_outlet', label: 'TSS Outlet (mg/L)' },
+  { key: 'amoniak_inlet', label: 'Amoniak Inlet (mg/L)' },
+  { key: 'amoniak_outlet', label: 'Amoniak Outlet (mg/L)' },
+  { key: 'nitrat_inlet', label: 'Nitrat Inlet (mg/L)' },
+  { key: 'nitrat_outlet', label: 'Nitrat Outlet (mg/L)' },
+  { key: 'nitrit_inlet', label: 'Nitrit Inlet (mg/L)' },
+  { key: 'nitrit_outlet', label: 'Nitrit Outlet (mg/L)' },
+  { key: 'bod_inlet', label: 'BOD Inlet (mg/L)' },
+  { key: 'bod_outlet', label: 'BOD Outlet (mg/L)' },
+  { key: 'catatan', label: 'Catatan' },
+]
 
 export const dynamic = 'force-dynamic'
 
@@ -32,7 +57,7 @@ export default async function InputPage() {
 
       <div className="flex items-center justify-between mt-10 mb-3">
         <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-        <ExportButton data={entries} filename="data-harian-wwtp" sheetName="Data Harian" />
+        <ExportButton data={entries} filename="data-harian-wwtp" columns={DATA_COLUMNS} />
       </div>
       <div className="bg-white rounded-3xl divide-y divide-ink/5">
         {(entries || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada data.</p>}

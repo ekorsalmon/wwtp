@@ -3,12 +3,20 @@ import ExportButton from '@/components/ExportButton'
 
 export const dynamic = 'force-dynamic'
 
+const NERACA_COLUMNS = [
+  { key: 'label', label: 'Nama B3' },
+  { key: 'stok_bulan_lalu', label: 'Stok Bulan Lalu' },
+  { key: 'penambahan', label: 'Penambahan' },
+  { key: 'pemakaian', label: 'Pemakaian' },
+  { key: 'sisa', label: 'Sisa' },
+]
+
 function Table({ title, unitLabel, rows, filename }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-display text-base font-bold text-ink">{title}</h2>
-        <ExportButton data={rows} filename={filename} sheetName="Neraca" />
+        <ExportButton data={rows} filename={filename} columns={NERACA_COLUMNS} />
       </div>
       <div className="bg-white rounded-3xl overflow-hidden">
         <table className="w-full text-sm">

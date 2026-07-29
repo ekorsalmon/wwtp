@@ -1,8 +1,23 @@
 import { createClient } from '@/lib/supabase/server'
 import { todayWIB } from '@/lib/date'
+import { formatTanggalExport } from '@/lib/export-excel'
 import SludgeMovementForm from '@/components/SludgeMovementForm'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
+
+const SLUDGE_COLUMNS = [
+  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
+  { key: 'area', label: 'Plant' },
+  { key: 'jenis', label: 'Jenis' },
+  { key: 'jumlah_kg', label: 'Jumlah (Kg)' },
+  { key: 'sumber', label: 'Sumber Limbah' },
+  { key: 'tanggal_kadaluarsa', label: 'Batas Simpan', format: formatTanggalExport },
+  { key: 'perusahaan_pengangkut', label: 'Perusahaan Pengangkut' },
+  { key: 'nopol_kendaraan', label: 'Nopol Kendaraan' },
+  { key: 'tujuan_penyerahan', label: 'Tujuan Penyerahan' },
+  { key: 'bukti_dokumen', label: 'Bukti Dokumen' },
+  { key: 'keterangan', label: 'Keterangan' },
+]
 
 export const dynamic = 'force-dynamic'
 
@@ -64,7 +79,7 @@ export default async function SludgePage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-            <ExportButton data={movements} filename="sludge-limbah-b3" sheetName="Sludge" />
+            <ExportButton data={movements} filename="sludge-limbah-b3" columns={SLUDGE_COLUMNS} />
           </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(movements || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada transaksi.</p>}

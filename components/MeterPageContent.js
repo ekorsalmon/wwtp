@@ -3,6 +3,27 @@ import HourlyReadingForm from '@/components/HourlyReadingForm'
 import DailyRecapTable from '@/components/DailyRecapTable'
 import ExportButton from '@/components/ExportButton'
 import DeleteButton from '@/components/DeleteButton'
+import { formatTanggalExport } from '@/lib/export-excel'
+
+const METER_COLUMNS = [
+  { key: 'tanggal', label: 'Tanggal', format: formatTanggalExport },
+  { key: 'label', label: 'Titik' },
+  {
+    key: 'jam',
+    label: 'Jam',
+    format: (v, row) => (row.jenis === 'flowmeter_harian' ? '' : `${String(v).padStart(2, '0')}:00`),
+  },
+  { key: 'nilai', label: 'Angka Meteran / Nilai' },
+  {
+    key: 'debit',
+    label: 'Debit / Hasil',
+    format: (v, row) => {
+      const isFlowmeterType = row.jenis === 'flowmeter' || row.jenis === 'flowmeter_harian'
+      return isFlowmeterType ? (v !== null && v !== undefined ? v : '') : row.nilai
+    },
+  },
+  { key: 'unit', label: 'Satuan' },
+]
 
 export default async function MeterPageContent({ title, description, meterKeys }) {
   const supabase = await createClient()
@@ -40,7 +61,11 @@ export default async function MeterPageContent({ title, description, meterKeys }
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-display text-base font-bold text-ink">Riwayat terakhir</h2>
-            <ExportButton data={recent} filename={`pembacaan-${title.toLowerCase().replace(/\s+/g, '-')}`} sheetName="Pembacaan" />
+            <ExportButton
+            data={recent}
+            filename={`pembacaan-${title.toLowerCase().replace(/\s+/g, '-')}`}
+            columns={METER_COLUMNS}
+          />
           </div>
           <div className="bg-white rounded-3xl divide-y divide-ink/5">
             {(recent || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada pembacaan.</p>}
