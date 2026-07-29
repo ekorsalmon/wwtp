@@ -35,14 +35,17 @@ const ALL_LINKS = [
 
 export default function Navbar({ fullName, role }) {
   const [worksOpen, setWorksOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
   const worksRef = useRef(null)
+  const menuRef = useRef(null)
   const searchRef = useRef(null)
   const router = useRouter()
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (worksRef.current && !worksRef.current.contains(e.target)) setWorksOpen(false)
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false)
       if (searchRef.current && !searchRef.current.contains(e.target)) setQuery('')
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -58,109 +61,123 @@ export default function Navbar({ fullName, role }) {
     router.push(href)
   }
 
+  const initial = (fullName || '?').trim().charAt(0).toUpperCase()
+
   return (
     <header className="bg-cream relative z-20">
-      <div className="max-w-5xl mx-auto px-4 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <span className="font-display font-extrabold text-lg tracking-tight text-ink">
-              WWTP <span className="text-brand">P1</span>
-            </span>
+      <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-4 min-w-0">
+          <span className="font-display font-extrabold text-lg tracking-tight text-ink shrink-0">
+            WWTP <span className="text-brand">P1</span>
+          </span>
 
-            <nav className="flex items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10">
-              <a
-                href="/dashboard"
-                className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
+          <nav className="flex items-center gap-1 bg-white rounded-full p-1 border-2 border-ink/10 shrink-0">
+            <a
+              href="/dashboard"
+              className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
+            >
+              HOME
+            </a>
+            <a
+              href="/input"
+              className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
+            >
+              DATA
+            </a>
+
+            <div className="relative" ref={worksRef}>
+              <button
+                type="button"
+                onClick={() => setWorksOpen((v) => !v)}
+                className={`text-sm font-bold px-4 py-1.5 rounded-full transition-colors ${
+                  worksOpen ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
+                }`}
               >
-                HOME
-              </a>
-              <a
-                href="/input"
-                className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
-              >
-                DATA
-              </a>
-
-              <div className="relative" ref={worksRef}>
-                <button
-                  type="button"
-                  onClick={() => setWorksOpen((v) => !v)}
-                  className={`text-sm font-bold px-4 py-1.5 rounded-full transition-colors ${
-                    worksOpen ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
-                  }`}
-                >
-                  WORKS
-                </button>
-                {worksOpen && (
-                  <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 flex flex-wrap gap-1.5 w-[420px] max-w-[80vw] shadow-lg">
-                    {WORKS_LINKS.map((link) => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-cream text-ink/60 hover:bg-brand hover:text-white transition-colors"
-                      >
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <a
-                href="/profile"
-                className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
-              >
-                Profile
-              </a>
-
-              {role === 'atasan' && (
-                <a
-                  href="/kelola-user"
-                  className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
-                >
-                  Kelola User
-                </a>
-              )}
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="relative" ref={searchRef}>
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Cari halaman..."
-                className="text-sm border-2 border-ink/10 rounded-full pl-4 pr-3 py-1.5 w-36 sm:w-48 focus:outline-none focus:border-brand transition-colors bg-white"
-              />
-              {matches.length > 0 && (
-                <div className="absolute top-full right-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 w-56 shadow-lg">
-                  {matches.map((m) => (
-                    <button
-                      key={m.href}
-                      type="button"
-                      onClick={() => goTo(m.href)}
-                      className="block w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-cream text-ink/70"
+                WORKS
+              </button>
+              {worksOpen && (
+                <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 flex flex-wrap gap-1.5 w-[420px] max-w-[80vw] shadow-lg">
+                  {WORKS_LINKS.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-cream text-ink/60 hover:bg-brand hover:text-white transition-colors"
                     >
-                      {m.label}
-                    </button>
+                      {link.label}
+                    </a>
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="hidden sm:block text-right leading-tight">
-              <p className="text-sm font-semibold text-ink">{fullName}</p>
-              <p className="text-xs text-ink/50">{ROLE_LABEL[role] || role}</p>
-            </div>
-            <form action="/auth/signout" method="post">
-              <button
-                type="submit"
-                className="text-sm font-semibold text-ink/60 hover:text-coral bg-white border-2 border-ink/10 rounded-full px-4 py-1.5 transition-colors"
+            {role === 'atasan' && (
+              <a
+                href="/kelola-user"
+                className="text-sm font-bold text-ink/70 hover:text-ink px-4 py-1.5 rounded-full hover:bg-cream transition-colors"
               >
-                Keluar
-              </button>
-            </form>
+                Kelola User
+              </a>
+            )}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="relative" ref={searchRef}>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Cari halaman..."
+              className="text-sm border-2 border-ink/10 rounded-full pl-4 pr-3 py-1.5 w-32 sm:w-44 focus:outline-none focus:border-brand transition-colors bg-white"
+            />
+            {matches.length > 0 && (
+              <div className="absolute top-full right-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 w-56 shadow-lg">
+                {matches.map((m) => (
+                  <button
+                    key={m.href}
+                    type="button"
+                    onClick={() => goTo(m.href)}
+                    className="block w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-cream text-ink/70"
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="relative" ref={menuRef}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="w-9 h-9 rounded-full bg-brand text-white font-display font-bold text-sm flex items-center justify-center hover:bg-brand-dark transition-colors"
+              title={fullName}
+            >
+              {initial}
+            </button>
+
+            {menuOpen && (
+              <div className="absolute top-full right-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 w-52 shadow-lg">
+                <div className="px-3 py-2 border-b border-ink/5 mb-1">
+                  <p className="text-sm font-semibold text-ink truncate">{fullName}</p>
+                  <p className="text-xs text-ink/50">{ROLE_LABEL[role] || role}</p>
+                </div>
+                <a
+                  href="/profile"
+                  className="block text-sm px-3 py-2 rounded-lg hover:bg-cream text-ink/70"
+                >
+                  Profile & aktivitas
+                </a>
+                <form action="/auth/signout" method="post">
+                  <button
+                    type="submit"
+                    className="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-cream text-coral font-medium"
+                  >
+                    Keluar
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </div>
