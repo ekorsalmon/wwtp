@@ -14,7 +14,8 @@ export default async function SludgePage() {
   const isAtasan = myProfile?.role === 'atasan'
 
   const { data: balanceRows } = await supabase.from('sludge_balance_current').select('*')
-  const sisaKg = balanceRows?.[0]?.sisa_kg ?? 0
+  const balanceP1 = balanceRows?.find((r) => r.area === 'P1')?.sisa_kg ?? 0
+  const balanceP2 = balanceRows?.find((r) => r.area === 'P2')?.sisa_kg ?? 0
 
   const { data: movements } = await supabase
     .from('sludge_movements')
@@ -34,12 +35,21 @@ export default async function SludgePage() {
         </p>
       </div>
 
-      <div className="rounded-3xl p-5 bg-lavender/40 max-w-xs">
-        <p className="text-sm font-medium text-ink/60 mb-2">Sisa limbah saat ini</p>
-        <p className="font-display text-3xl font-extrabold text-ink">
-          {sisaKg} <span className="text-sm font-medium text-ink/40">kg</span>
-        </p>
-        <p className="text-xs text-ink/40 mt-1">≈ {(sisaKg / 1000).toFixed(2)} ton</p>
+      <div className="grid grid-cols-2 gap-4 max-w-md">
+        <div className="rounded-3xl p-5 bg-lavender/40">
+          <p className="text-sm font-medium text-ink/60 mb-2">Sisa limbah — WWTP P1</p>
+          <p className="font-display text-3xl font-extrabold text-ink">
+            {balanceP1} <span className="text-sm font-medium text-ink/40">kg</span>
+          </p>
+          <p className="text-xs text-ink/40 mt-1">≈ {(balanceP1 / 1000).toFixed(2)} ton</p>
+        </div>
+        <div className="rounded-3xl p-5 bg-sky/40">
+          <p className="text-sm font-medium text-ink/60 mb-2">Sisa limbah — WWTP P2</p>
+          <p className="font-display text-3xl font-extrabold text-ink">
+            {balanceP2} <span className="text-sm font-medium text-ink/40">kg</span>
+          </p>
+          <p className="text-xs text-ink/40 mt-1">≈ {(balanceP2 / 1000).toFixed(2)} ton</p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -64,6 +74,9 @@ export default async function SludgePage() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-ink/80 font-medium">
+                        <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cream text-ink/50 mr-1">
+                          {m.area}
+                        </span>
                         {m.jenis === 'masuk' ? `Masuk · ${m.sumber || '-'}` : `Keluar · ${m.tujuan_penyerahan || '-'}`}
                       </p>
                       <p className="text-xs text-ink/40">

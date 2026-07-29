@@ -11,6 +11,7 @@ export default function SludgeMovementForm() {
   const today = new Date().toISOString().slice(0, 10)
   const [form, setForm] = useState({
     tanggal: today,
+    area: 'P1',
     jenis: 'masuk',
     jumlah_kg: '',
     sumber: '',
@@ -42,6 +43,7 @@ export default function SludgeMovementForm() {
 
     const payload = {
       tanggal: form.tanggal,
+      area: form.area,
       jenis: form.jenis,
       jumlah_kg: Number(form.jumlah_kg),
       keterangan: form.keterangan || null,
@@ -78,7 +80,7 @@ export default function SludgeMovementForm() {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-5 space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="tanggal">
             Tanggal
@@ -90,6 +92,15 @@ export default function SludgeMovementForm() {
             onChange={(e) => update('tanggal', e.target.value)}
             className={inputClass}
           />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="area">
+            Plant
+          </label>
+          <select id="area" value={form.area} onChange={(e) => update('area', e.target.value)} className={inputClass}>
+            <option value="P1">WWTP P1</option>
+            <option value="P2">WWTP P2</option>
+          </select>
         </div>
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="jenis">
