@@ -50,8 +50,13 @@ export default async function ProfilePage({ searchParams }) {
   const today = todayWIB()
   const { data: todayShifts } = await supabase
     .from('shifts')
-    .select('*, profiles(full_name)')
+    .select('*')
     .eq('tanggal', today)
+
+  const profileNameById = {}
+  ;(profiles || []).forEach((p) => {
+    profileNameById[p.id] = p.full_name
+  })
 
   const shiftPagi = (todayShifts || []).filter((s) => s.shift === 'pagi')
   const shiftMalam = (todayShifts || []).filter((s) => s.shift === 'malam')
@@ -91,7 +96,7 @@ export default async function ProfilePage({ searchParams }) {
             ) : (
               <ul className="text-sm text-ink space-y-1">
                 {shiftPagi.map((s) => (
-                  <li key={s.id}>{s.profiles?.full_name}</li>
+                  <li key={s.id}>{profileNameById[s.user_id] || '(tidak diketahui)'}</li>
                 ))}
               </ul>
             )}
@@ -103,7 +108,7 @@ export default async function ProfilePage({ searchParams }) {
             ) : (
               <ul className="text-sm text-ink space-y-1">
                 {shiftMalam.map((s) => (
-                  <li key={s.id}>{s.profiles?.full_name}</li>
+                  <li key={s.id}>{profileNameById[s.user_id] || '(tidak diketahui)'}</li>
                 ))}
               </ul>
             )}

@@ -44,17 +44,22 @@ export default async function DashboardPage() {
 
   const { data: kendala } = await supabase
     .from('work_issues')
-    .select('*, profiles(full_name)')
+    .select('*')
     .order('tanggal', { ascending: false })
     .limit(5)
 
   const { data: profiles } = await supabase.from('profiles').select('id, full_name').order('full_name')
 
+  const profileNameById = {}
+  ;(profiles || []).forEach((p) => {
+    profileNameById[p.id] = p.full_name
+  })
+
   const { year, month, daysInMonth, monthStart, monthEnd } = monthRangeWIB()
 
   const { data: monthShifts } = await supabase
     .from('shifts')
-    .select('*, profiles(full_name)')
+    .select('*')
     .gte('tanggal', monthStart)
     .lte('tanggal', monthEnd)
 
@@ -76,7 +81,7 @@ export default async function DashboardPage() {
   const kendalaExportRows = (kendala || []).map((k) => ({
     Tanggal: formatTanggalExport(k.tanggal),
     Kendala: k.deskripsi,
-    'Dilaporkan Oleh': k.profiles?.full_name || '',
+    'Dilaporkan Oleh': profileNameById[k.user_id] || '',
     Status: k.status === 'selesai' ? 'Selesai' : 'Belum Selesai',
   }))
 
@@ -143,7 +148,7 @@ export default async function DashboardPage() {
                       year: 'numeric',
                     })}
                     {' · '}
-                    {k.profiles?.full_name}
+                    {profileNameById[k.user_id]}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -171,7 +176,7 @@ export default async function DashboardPage() {
           <ExportButton
             data={(monthShifts || []).map((s) => ({
               Tanggal: formatTanggalExport(s.tanggal),
-              Nama: s.profiles?.full_name,
+              Nama: profileNameById[s.user_id],
               Shift: s.shift === 'pagi' ? 'Pagi' : 'Malam',
             }))}
             filename="kehadiran-shift"
