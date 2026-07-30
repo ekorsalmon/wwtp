@@ -60,14 +60,14 @@ export default async function DashboardPage() {
 
   const shiftMap = {}
   ;(monthShifts || []).forEach((s) => {
-    const day = new Date(s.tanggal).getDate()
+    const day = Number(s.tanggal.slice(8, 10))
     if (!shiftMap[s.user_id]) shiftMap[s.user_id] = {}
     shiftMap[s.user_id][day] = s.shift
   })
 
   const sundays = new Set()
   for (let d = 1; d <= daysInMonth; d++) {
-    if (new Date(year, month, d).getDay() === 0) sundays.add(d)
+    if (new Date(Date.UTC(year, month, d)).getUTCDay() === 0) sundays.add(d)
   }
 
   const latest = entries?.[0]
