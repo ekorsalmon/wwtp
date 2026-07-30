@@ -62,6 +62,10 @@ export default async function ProfilePage({ searchParams }) {
   const shiftMalam = (todayShifts || []).filter((s) => s.shift === 'malam')
   const myShift = (todayShifts || []).find((s) => s.user_id === user.id)?.shift || null
 
+  const { data: recentShifts } = isAtasan
+    ? await supabase.from('shifts').select('*').order('tanggal', { ascending: false }).order('created_at', { ascending: false }).limit(30)
+    : { data: null }
+
   const activityExportRows = (activities || []).map((a) => ({
     Tanggal: formatTanggalExport(a.tanggal),
     Aktivitas: a.aktivitas,
@@ -120,6 +124,32 @@ export default async function ProfilePage({ searchParams }) {
           <div className="mt-4">
             <p className="text-xs text-ink/40 mb-2">Atau atur shift orang lain di sini:</p>
             <ShiftForm profiles={profiles || []} />
+          </div>
+        )}
+
+        {isAtasan && (
+          <div className="mt-6">
+            <h3 className="font-display text-sm font-bold text-ink mb-3">Kelola shift (30 terakhir)</h3>
+            <div className="bg-white rounded-3xl divide-y divide-ink/5">
+              {(recentShifts || []).length === 0 && <p className="text-sm text-ink/40 p-4">Belum ada shift tercatat.</p>}
+              {(recentShifts || []).map((s) => (
+                <div key={s.id} className="px-4 py-3 text-sm flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-ink/80 font-medium">{profileNameById[s.user_id] || '(tidak diketahui)'}</p>
+                    <p className="text-xs text-ink/40">
+                      {new Date(s.tanggal).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                      {' · '}
+                      {s.shift === 'pagi' ? 'Pagi' : 'Malam'}
+                    </p>
+                  </div>
+                  <DeleteButton table="shifts" id={s.id} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

@@ -106,7 +106,7 @@ export default function Navbar({ fullName, role }) {
                   works1Open ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
                 }`}
               >
-                WORKS 1
+                WWTP P1
               </button>
               {works1Open && (
                 <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 flex flex-wrap gap-1.5 w-[420px] max-w-[80vw] shadow-lg">
@@ -131,7 +131,7 @@ export default function Navbar({ fullName, role }) {
                   works2Open ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
                 }`}
               >
-                WORKS 2
+                WWTP P2
               </button>
               {works2Open && (
                 <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 flex flex-wrap gap-1.5 w-[420px] max-w-[80vw] shadow-lg">

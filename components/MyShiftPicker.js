@@ -37,6 +37,34 @@ export default function MyShiftPicker({ currentShift }) {
     router.refresh()
   }
 
+  async function remove() {
+    setSaving(true)
+    setStatus(null)
+    const prevShift = localShift
+    setLocalShift(null)
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    const { error } = await supabase
+      .from('shifts')
+      .delete()
+      .eq('tanggal', todayWIB())
+      .eq('user_id', user.id)
+
+    setSaving(false)
+
+    if (error) {
+      setLocalShift(prevShift)
+      setStatus({ type: 'error', message: 'Gagal menghapus shift.' })
+      return
+    }
+
+    setStatus({ type: 'success', message: 'Shift dibatalkan.' })
+    router.refresh()
+  }
+
   return (
     <div className="bg-white rounded-3xl p-5">
       <p className="text-sm font-semibold text-ink/70 mb-3">
@@ -63,6 +91,16 @@ export default function MyShiftPicker({ currentShift }) {
         >
           Malam
         </button>
+        {localShift && (
+          <button
+            type="button"
+            onClick={remove}
+            disabled={saving}
+            className="text-xs font-semibold text-ink/30 hover:text-coral transition-colors disabled:opacity-40"
+          >
+            Batalkan
+          </button>
+        )}
         {status && (
           <span className={`text-xs font-medium ${status.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
             {status.message}
