@@ -9,20 +9,31 @@ const ROLE_LABEL = {
   atasan: 'Atasan',
 }
 
-const WORKS_LINKS = [
+// WORKS 1 = semua yang khusus WWTP Plant 1, ditambah fitur yang memang
+// satu buat seluruh site (gak ada versi P2-nya).
+const WORKS1_LINKS = [
+  { href: '/fm-out-stp-p1', label: 'FM Out STP (P1)' },
+  { href: '/fm-out-wwtp-p1', label: 'FM Out WWTP (P1)' },
+  { href: '/sv30-stp-p1', label: 'SV30 STP (P1)' },
+  { href: '/sv30-wwtp-p1', label: 'SV30 WWTP (P1)' },
+  { href: '/sludge-p1', label: 'Data Sludge (P1)' },
   { href: '/curah-hujan', label: 'Curah Hujan' },
-  { href: '/sludge', label: 'Data Sludge' },
-  { href: '/fm-out-stp', label: 'FM Out STP' },
-  { href: '/fm-out-wwtp', label: 'FM Out WWTP' },
-  { href: '/fm-in-rwtp', label: 'FM In RWTP' },
-  { href: '/fm-out-rwtp', label: 'FM Out RWTP' },
-  { href: '/sv30-stp', label: 'SV30 STP' },
-  { href: '/sv30-wwtp', label: 'SV30 WWTP' },
   { href: '/analisa-lab', label: 'Analisa' },
   { href: '/neraca', label: 'Logbook' },
+  { href: '/fm-in-rwtp', label: 'FM In RWTP' },
+  { href: '/fm-out-rwtp', label: 'FM Out RWTP' },
   { href: '/abt', label: 'ABT' },
   { href: '/f1-f4', label: 'F1 & F4' },
   { href: '/stok-kimia', label: 'Stok Kimia' },
+]
+
+// WORKS 2 = khusus WWTP Plant 2 aja.
+const WORKS2_LINKS = [
+  { href: '/fm-out-stp-p2', label: 'FM Out STP (P2)' },
+  { href: '/fm-out-wwtp-p2', label: 'FM Out WWTP (P2)' },
+  { href: '/sv30-stp-p2', label: 'SV30 STP (P2)' },
+  { href: '/sv30-wwtp-p2', label: 'SV30 WWTP (P2)' },
+  { href: '/sludge-p2', label: 'Data Sludge (P2)' },
 ]
 
 const ALL_LINKS = [
@@ -30,21 +41,25 @@ const ALL_LINKS = [
   { href: '/input', label: 'DATA' },
   { href: '/profile', label: 'Profile' },
   { href: '/kelola-user', label: 'Kelola User' },
-  ...WORKS_LINKS,
+  ...WORKS1_LINKS,
+  ...WORKS2_LINKS,
 ]
 
 export default function Navbar({ fullName, role }) {
-  const [worksOpen, setWorksOpen] = useState(false)
+  const [works1Open, setWorks1Open] = useState(false)
+  const [works2Open, setWorks2Open] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const worksRef = useRef(null)
+  const works1Ref = useRef(null)
+  const works2Ref = useRef(null)
   const menuRef = useRef(null)
   const searchRef = useRef(null)
   const router = useRouter()
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (worksRef.current && !worksRef.current.contains(e.target)) setWorksOpen(false)
+      if (works1Ref.current && !works1Ref.current.contains(e.target)) setWorks1Open(false)
+      if (works2Ref.current && !works2Ref.current.contains(e.target)) setWorks2Open(false)
       if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false)
       if (searchRef.current && !searchRef.current.contains(e.target)) setQuery('')
     }
@@ -83,19 +98,44 @@ export default function Navbar({ fullName, role }) {
               DATA
             </a>
 
-            <div className="relative" ref={worksRef}>
+            <div className="relative" ref={works1Ref}>
               <button
                 type="button"
-                onClick={() => setWorksOpen((v) => !v)}
+                onClick={() => setWorks1Open((v) => !v)}
                 className={`text-sm font-bold px-4 py-1.5 rounded-full transition-colors ${
-                  worksOpen ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
+                  works1Open ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
                 }`}
               >
-                WORKS
+                WORKS 1
               </button>
-              {worksOpen && (
+              {works1Open && (
                 <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 flex flex-wrap gap-1.5 w-[420px] max-w-[80vw] shadow-lg">
-                  {WORKS_LINKS.map((link) => (
+                  {WORKS1_LINKS.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-cream text-ink/60 hover:bg-brand hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="relative" ref={works2Ref}>
+              <button
+                type="button"
+                onClick={() => setWorks2Open((v) => !v)}
+                className={`text-sm font-bold px-4 py-1.5 rounded-full transition-colors ${
+                  works2Open ? 'bg-brand text-white' : 'text-ink/70 hover:text-ink hover:bg-cream'
+                }`}
+              >
+                WORKS 2
+              </button>
+              {works2Open && (
+                <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border-2 border-ink/10 p-2 flex flex-wrap gap-1.5 w-[420px] max-w-[80vw] shadow-lg">
+                  {WORKS2_LINKS.map((link) => (
                     <a
                       key={link.href}
                       href={link.href}

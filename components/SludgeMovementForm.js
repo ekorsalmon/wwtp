@@ -8,11 +8,11 @@ import { todayWIB } from '@/lib/date'
 const inputClass =
   'w-full border-2 border-ink/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand transition-colors'
 
-export default function SludgeMovementForm() {
+export default function SludgeMovementForm({ fixedArea }) {
   const today = todayWIB()
   const [form, setForm] = useState({
     tanggal: today,
-    area: 'P1',
+    area: fixedArea || 'P1',
     jenis: 'masuk',
     jumlah_kg: '',
     sumber: '',
@@ -98,10 +98,16 @@ export default function SludgeMovementForm() {
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="area">
             Plant
           </label>
-          <select id="area" value={form.area} onChange={(e) => update('area', e.target.value)} className={inputClass}>
-            <option value="P1">WWTP P1</option>
-            <option value="P2">WWTP P2</option>
-          </select>
+          {fixedArea ? (
+            <div className={`${inputClass} bg-cream text-ink/60 font-semibold flex items-center`}>
+              WWTP {fixedArea}
+            </div>
+          ) : (
+            <select id="area" value={form.area} onChange={(e) => update('area', e.target.value)} className={inputClass}>
+              <option value="P1">WWTP P1</option>
+              <option value="P2">WWTP P2</option>
+            </select>
+          )}
         </div>
         <div>
           <label className="block text-sm font-semibold text-ink/70 mb-1" htmlFor="jenis">
